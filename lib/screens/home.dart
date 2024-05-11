@@ -1,5 +1,6 @@
-import 'package:farm_well/screens/prediction.dart';
+// import 'package:farm_well/screens/prediction.dart';
 import 'package:flutter/material.dart';
+// import 'package:farm_well/main.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,6 +17,6 @@ class _HomeState extends State<Home> {
           title: Text("Home"),
           centerTitle: true,
         ),
-        body: PredictionScreen());
+        body: const Text("Home page"));
   }
 }
