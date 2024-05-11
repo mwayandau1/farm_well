@@ -42,7 +42,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Educational Content'),
+        title: const Text('Create Educational Content'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -53,7 +53,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
               children: [
                 TextFormField(
                   controller: _titleController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Title',
                   ),
                   validator: (value) {
@@ -63,10 +63,10 @@ class _EducationalScreenState extends State<EducationalScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _contentController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Content',
                   ),
                   maxLines: 5,
@@ -77,13 +77,13 @@ class _EducationalScreenState extends State<EducationalScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 GestureDetector(
                   onTap: () {
                     _pickImage(ImageSource.gallery);
                   },
                   child: Container(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8.0),
@@ -91,8 +91,8 @@ class _EducationalScreenState extends State<EducationalScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.image),
-                        SizedBox(width: 8.0),
+                        const Icon(Icons.image),
+                        const SizedBox(width: 8.0),
                         Text(
                           _imageFile == null
                               ? 'Upload Image'
@@ -110,13 +110,13 @@ class _EducationalScreenState extends State<EducationalScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green, // Background color
                   ),
                   onPressed: _submitForm,
-                  child: Text(
+                  child: const Text(
                     'Submit',
                     style: TextStyle(
                         color: Colors.white,
