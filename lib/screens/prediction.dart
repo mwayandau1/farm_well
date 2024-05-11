@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PredictionScreen extends StatefulWidget {
+  const PredictionScreen({super.key});
+
   @override
-  _PredictionScreenState createState() => _PredictionScreenState();
+  State<PredictionScreen> createState() => _PredictionScreenState();
 }
 
 class _PredictionScreenState extends State<PredictionScreen> {
@@ -34,7 +36,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
@@ -47,15 +49,15 @@ class _PredictionScreenState extends State<PredictionScreen> {
                       width: 300,
                       fit: BoxFit.cover,
                     ),
-                  SizedBox(height: 20),
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Take a photo of your plant',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'Make sure the entire plant is in the frame and\nthat the image is clear.',
                     textAlign: TextAlign.center,
@@ -64,7 +66,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
                       color: Colors.grey[600],
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton.icon(
                     onPressed: () => _pickImage(ImageSource.camera),
                     icon: Icon(Icons.camera_alt),
@@ -78,14 +80,14 @@ class _PredictionScreenState extends State<PredictionScreen> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Text(
+                  const Text(
                     'How it works',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     'Our algorithm looks at the leaf, stem, and flower.\nIt then predicts the plant\'s disease based on the\ncolor, shape, and size of each part.',
                     textAlign: TextAlign.center,
@@ -94,10 +96,10 @@ class _PredictionScreenState extends State<PredictionScreen> {
                       color: Colors.grey[600],
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   TextButton(
                     onPressed: () => _pickImage(ImageSource.gallery),
-                    child: Text(
+                    child: const Text(
                       'Upload from gallery',
                       style: TextStyle(
                         fontSize: 16,
