@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "868737949553",
+    "project_id": "farm-well",
+    "storage_bucket": "farm-well.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868737949553:android:0ef33a880b556f0d5060d0",
+        "android_client_info": {
+          "package_name": "com.example.farm_well"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBUuaGlSE_Y5Y27IapCjtJ2E0Nt-Ywu2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
