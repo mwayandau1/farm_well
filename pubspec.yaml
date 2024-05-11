@@ -70,6 +70,7 @@ flutter:
     - images/apple1.png
     - images/aifarm.jpg
     - images/plant_background.jpeg
+    - images/profile_image.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
