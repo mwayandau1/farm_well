@@ -1,20 +1,14 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_tflite/flutter_tflite.dart';
 
 class PredictionScreen extends StatefulWidget {
-  const PredictionScreen({super.key});
-
   @override
-  State<PredictionScreen> createState() => _PredictionScreenState();
+  _PredictionScreenState createState() => _PredictionScreenState();
 }
 
 class _PredictionScreenState extends State<PredictionScreen> {
   File? _imageFile;
-  List<dynamic>? _recognitions;
-  String? _feedback;
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
@@ -22,83 +16,98 @@ class _PredictionScreenState extends State<PredictionScreen> {
       setState(() {
         _imageFile = File(pickedFile.path);
       });
-      _predictDisease();
-    }
-  }
-
-  Future<void> _predictDisease() async {
-    if (_imageFile != null) {
-      final recognitions = await Tflite.runModelOnImage(
-        path: _imageFile!.path,
-        numResults: 1,
-        threshold: 0.5,
-        imageMean: 127.5,
-        imageStd: 127.5,
-      );
-
-      setState(() {
-        _recognitions = recognitions;
-      });
-    }
-  }
-
-  Future<void> _sendFeedback() async {
-    if (_feedback != null && _feedback!.isNotEmpty) {
-      // Send feedback to server or handle it locally
-      print('Feedback: $_feedback');
+      // Call your prediction function here
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Disease Prediction'),
-      ),
-      body: Center(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_imageFile != null)
-              Image.file(
-                _imageFile!,
-                height: 300,
-                width: 300,
+            Container(
+              width: MediaQuery.of(context).size.width,
+              child: Image.asset(
+                "images/plant_background.jpeg",
                 fit: BoxFit.cover,
               ),
-            const SizedBox(height: 20),
-            if (_recognitions != null && _recognitions!.isNotEmpty)
-              Text(
-                'Predicted Disease: ${_recognitions![0]['label']}',
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                  child: const Text('Pick Image'),
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () => _pickImage(ImageSource.camera),
-                  child: const Text('Take Picture'),
-                ),
-              ],
             ),
-            const SizedBox(height: 20),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Enter feedback',
+            SizedBox(height: 30.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (_imageFile != null)
+                    Image.file(
+                      _imageFile!,
+                      height: 300,
+                      width: 300,
+                      fit: BoxFit.cover,
+                    ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Take a photo of your plant',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Make sure the entire plant is in the frame and\nthat the image is clear.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: Icon(Icons.camera_alt),
+                    label: Text('Use Camera'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'How it works',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Our algorithm looks at the leaf, stem, and flower.\nIt then predicts the plant\'s disease based on the\ncolor, shape, and size of each part.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    child: Text(
+                      'Upload from gallery',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.green,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              onChanged: (value) => setState(() => _feedback = value),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _sendFeedback,
-              child: const Text('Send Feedback'),
             ),
           ],
         ),

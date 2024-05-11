@@ -16,6 +16,6 @@ class _HomeState extends State<Home> {
           title: Text("Home"),
           centerTitle: true,
         ),
-        body: const PredictionScreen());
+        body: PredictionScreen());
   }
 }
