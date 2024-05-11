@@ -1,3 +1,4 @@
+import 'package:farm_well/screens/prediction.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -11,10 +12,10 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Home"),
-        centerTitle: true,
-      ),
-    );
+        appBar: AppBar(
+          title: Text("Home"),
+          centerTitle: true,
+        ),
+        body: const PredictionScreen());
   }
 }
