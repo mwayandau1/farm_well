@@ -36,6 +36,10 @@ class _PredictionScreenState extends State<PredictionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Prediction"),
+        centerTitle: true,
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
@@ -73,7 +77,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Make sure the entire plant is in the frame and\nthat the image is clear.',
+                          'Make sure the entire leave is in the frame and\nthat the image is clear.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -111,7 +115,6 @@ class _PredictionScreenState extends State<PredictionScreen> {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _predictDisease,
-                      child: Text('Predict'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
@@ -119,13 +122,14 @@ class _PredictionScreenState extends State<PredictionScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
+                      child: const Text('Predict'),
                     ),
                     if (_predictionResult != null)
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
                           _predictionResult!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),

@@ -40,6 +40,7 @@ dependencies:
   google_sign_in: ^6.2.1
   image_picker: ^0.8.6+1
   flutter_tflite: ^1.0.1
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,10 @@ flutter:
     - images/aifarm.jpg
     - images/plant_background.jpeg
     - images/profile_image.jpeg
+    - images/tomato_leaf_blight.jpeg
+    - images/citrus_greening.jpeg
+    - images/prediction1.jpeg
+    - images/prediction2.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
