@@ -12,7 +12,20 @@
           "package_name": "com.example.farm_well"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "868737949553-972us5j0fs6td5c5qvrjsm7vsnjfidpq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.farm_well",
+            "certificate_hash": "c4a5f415d366babb8772d88a70ac4a07e092c959"
+          }
+        },
+        {
+          "client_id": "868737949553-314h0b3ppnscp3qmicf9bucqhtouhnml.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDBUuaGlSE_Y5Y27IapCjtJ2E0Nt-Ywu2c"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "868737949553-314h0b3ppnscp3qmicf9bucqhtouhnml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "868737949553-rp7dekj0528dsh0qq6k31kl4kkudb4dl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.farmWell"
+              }
+            }
+          ]
         }
       }
     }

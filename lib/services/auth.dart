@@ -1,5 +1,6 @@
 import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/services/database.dart';
+import 'package:farm_well/widgets/bottom_nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -41,8 +42,8 @@ class AuthMethods {
       await DatabaseMethods()
           .addUser(userDetails.uid, userInfoMap)
           .then((value) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Home()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const BottomNavBar()));
       });
     }
   }
