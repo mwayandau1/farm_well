@@ -32,7 +32,7 @@ class _SignUpState extends State<SignUp> {
         )));
         // ignore: use_build_context_synchronously
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Home()));
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -56,6 +56,10 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Sign Up"),
+        centerTitle: true,
+      ),
       backgroundColor: Colors.white,
       body: Container(
         child: SingleChildScrollView(
