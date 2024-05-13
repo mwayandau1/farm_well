@@ -1,8 +1,16 @@
+import 'package:farm_well/screens/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final currentUser = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,9 +34,9 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            const Text(
-              'john.doe@example.com',
-              style: TextStyle(
+            Text(
+              '${currentUser!.email}',
+              style: const TextStyle(
                 fontSize: 18,
                 color: Colors.grey,
               ),
@@ -51,8 +59,10 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Add functionality to sign out
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const LogIn()));
               },
               child: const Text('Sign Out'),
             ),

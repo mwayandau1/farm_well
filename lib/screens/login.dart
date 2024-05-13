@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_well/widgets/bottom_nav_bar.dart';
 import 'package:farm_well/screens/forgot_password.dart';
 // import 'package:farm_well/screens/home.dart';
@@ -23,11 +24,15 @@ class _LogInState extends State<LogIn> {
 
   final _formkey = GlobalKey<FormState>();
 
+  bool isLoading = false;
   userLogin() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.push(context,
+      Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => const BottomNavBar()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -46,6 +51,9 @@ class _LogInState extends State<LogIn> {
             )));
       }
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -125,30 +133,37 @@ class _LogInState extends State<LogIn> {
                         height: 30.0,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          if (_formkey.currentState!.validate()) {
-                            setState(() {
-                              email = mailcontroller.text;
-                              password = passwordcontroller.text;
-                            });
-                          }
-                          userLogin();
-                        },
+                        onTap: isLoading
+                            ? null
+                            : () {
+                                if (_formkey.currentState!.validate()) {
+                                  setState(() {
+                                    email = mailcontroller.text;
+                                    password = passwordcontroller.text;
+                                  });
+                                }
+                                userLogin();
+                              },
                         child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 13.0, horizontal: 30.0),
-                            decoration: BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.circular(30)),
-                            child: const Center(
-                                child: Text(
-                              "Sign In",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22.0,
-                                  fontWeight: FontWeight.w500),
-                            ))),
+                          width: MediaQuery.of(context).size.width,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 13.0, horizontal: 30.0),
+                          decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Center(
+                              child: !isLoading
+                                  ? const Text(
+                                      "Sign In",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.w500),
+                                    )
+                                  : const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )),
+                        ),
                       ),
                     ],
                   ),
