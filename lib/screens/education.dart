@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farm_well/services/image_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -24,18 +26,23 @@ class _EducationalScreenState extends State<EducationalScreen> {
     }
   }
 
-  void _submitForm() {
+  void _submitForm(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       // Save the content to your database or perform any other necessary actions
       final title = _titleController.text;
       final content = _contentController.text;
       final imageFile = _imageFile;
-
-      // Example: Print the form data
-      print('Title: $title');
-      print('Content: $content');
-      print('Image File: $imageFile');
+      final imageUrl = await uploadImageToFirebase(imageFile!);
+      await FirebaseFirestore.instance.collection("educational_content").add({
+        "title": title,
+        "content": content,
+        "image": imageUrl,
+      });
     }
+    if (!context.mounted) {
+      return;
+    }
+    Navigator.pop(context);
   }
 
   @override
@@ -115,7 +122,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green, // Background color
                   ),
-                  onPressed: _submitForm,
+                  onPressed: () => _submitForm(context),
                   child: const Text(
                     'Submit',
                     style: TextStyle(

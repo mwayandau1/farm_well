@@ -3,6 +3,7 @@ import 'package:farm_well/screens/profile.dart';
 import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/screens/community.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -29,6 +30,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
       // appBar: AppBar(
       //   title: Text('Bottom Navigation Bar'),
       // ),
+      backgroundColor: Colors.grey,
+
       body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -37,13 +40,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
             _currentIndex = index;
           });
         },
+        selectedItemColor: Colors.black,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.image),
+            icon: Icon(Icons.online_prediction),
             label: 'Prediction',
           ),
           BottomNavigationBarItem(
@@ -55,7 +59,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
             label: 'Profile',
           ),
         ],
-        backgroundColor: greenColor,
       ),
     );
   }

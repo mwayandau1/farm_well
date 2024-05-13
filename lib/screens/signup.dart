@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/screens/login.dart';
+import 'package:farm_well/widgets/bottom_nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -30,9 +32,13 @@ class _SignUpState extends State<SignUp> {
           "Registered Successfully",
           style: TextStyle(fontSize: 20.0),
         )));
+        await FirebaseFirestore.instance.collection("user").add({
+          'username': namecontroller.text,
+          'email': userCredential.user!.email,
+        });
         // ignore: use_build_context_synchronously
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const BottomNavBar()));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
