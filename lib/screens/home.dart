@@ -10,20 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<EducationalContent> recentEducationalContent = [
-    // Replace with your actual educational content data
-    EducationalContent(
-      title: 'Tomato Leaf Blight',
-      content: 'Learn about the causes and symptoms of tomato leaf blight.',
-      imageUrl: 'images/tomato_leaf_blight.jpeg',
-    ),
-    EducationalContent(
-      title: 'Citrus Greening',
-      content: 'Understand the impact of citrus greening on your orange trees.',
-      imageUrl: 'images/citrus_greening.jpeg',
-    ),
-  ];
-
   List<PredictionResult> recentPredictionResults = [
     // Replace with your actual prediction result data
     PredictionResult(
@@ -207,18 +193,6 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-}
-
-class EducationalContent {
-  final String title;
-  final String content;
-  final String imageUrl;
-
-  EducationalContent({
-    required this.title,
-    required this.content,
-    required this.imageUrl,
-  });
 }
 
 class PredictionResult {

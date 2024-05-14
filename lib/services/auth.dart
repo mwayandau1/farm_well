@@ -1,6 +1,5 @@
-import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/services/database.dart';
-import 'package:farm_well/widgets/bottom_nav_bar.dart';
+import 'package:farm_well/widgets/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -11,7 +10,7 @@ class AuthMethods {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   getCurrentUser() async {
-    return await auth.currentUser;
+    return auth.currentUser;
   }
 
   signInWithGoogle(BuildContext context) async {
@@ -32,20 +31,16 @@ class AuthMethods {
 
     User? userDetails = result.user;
 
-    if (result != null) {
-      Map<String, dynamic> userInfoMap = {
-        "email": userDetails!.email,
-        "name": userDetails.displayName,
-        "imgUrl": userDetails.photoURL,
-        "id": userDetails.uid
-      };
-      await DatabaseMethods()
-          .addUser(userDetails.uid, userInfoMap)
-          .then((value) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const BottomNavBar()));
-      });
-    }
+    Map<String, dynamic> userInfoMap = {
+      "email": userDetails!.email,
+      "name": userDetails.displayName,
+      "imgUrl": userDetails.photoURL,
+      "id": userDetails.uid
+    };
+    await DatabaseMethods().addUser(userDetails.uid, userInfoMap).then((value) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const MainLayout()));
+    });
   }
 
 //   Future<User> signInWithApple({List<Scope> scopes = const []}) async {
