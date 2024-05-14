@@ -33,7 +33,6 @@ class _EducationalScreenState extends State<EducationalScreen> {
       isLoading = true;
     });
     if (_formKey.currentState!.validate()) {
-      // Save the content to your database or perform any other necessary actions
       final title = _titleController.text;
       final content = _contentController.text;
       final imageFile = _imageFile;
@@ -58,6 +57,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Educational Content'),
+        backgroundColor: Colors.green[800],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -70,6 +70,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
                   controller: _titleController,
                   decoration: const InputDecoration(
                     labelText: 'Title',
+                    border: OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -83,6 +84,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
                   controller: _contentController,
                   decoration: const InputDecoration(
                     labelText: 'Content',
+                    border: OutlineInputBorder(),
                   ),
                   maxLines: 5,
                   validator: (value) {
@@ -102,7 +104,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
+                      color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Row(
@@ -114,35 +116,56 @@ class _EducationalScreenState extends State<EducationalScreen> {
                           _imageFile == null
                               ? 'Upload Image'
                               : 'Image Selected',
+                          style: TextStyle(
+                            color: _imageFile == null
+                                ? Colors.grey[600]
+                                : Colors.green[800],
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
                 if (_imageFile != null)
-                  SizedBox(
-                    height: 200,
-                    child: Image.file(
-                      _imageFile!,
-                      fit: BoxFit.cover,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.file(
+                        _imageFile!,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green, // Background color
+                    backgroundColor: Colors.green[800],
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
                   onPressed: () => _submitForm(context),
                   child: isLoading
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
                         )
                       : const Text(
                           'Submit',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.w500),
+                            color: Colors.white,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
               ],
