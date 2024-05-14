@@ -1,6 +1,6 @@
 // import 'package:farm_well/screens/login.dart';
 import 'package:farm_well/screens/login.dart';
-import 'package:farm_well/widgets/bottom_nav_bar.dart';
+import 'package:farm_well/widgets/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
-              return const BottomNavBar();
+              return const MainLayout();
             } else {
               return const LogIn();
             }

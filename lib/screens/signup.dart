@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/screens/login.dart';
-import 'package:farm_well/widgets/bottom_nav_bar.dart';
+import 'package:farm_well/widgets/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,13 +13,17 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   String email = "", password = "", name = "";
-  TextEditingController namecontroller = new TextEditingController();
-  TextEditingController passwordcontroller = new TextEditingController();
-  TextEditingController mailcontroller = new TextEditingController();
+  TextEditingController namecontroller = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
+  TextEditingController mailcontroller = TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   registration() async {
+    setState(() {
+      isLoading = true;
+    });
     if (password != "" &&
         namecontroller.text != "" &&
         mailcontroller.text != "") {
@@ -38,7 +41,7 @@ class _SignUpState extends State<SignUp> {
         });
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const BottomNavBar()));
+            MaterialPageRoute(builder: (context) => const MainLayout()));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -57,6 +60,9 @@ class _SignUpState extends State<SignUp> {
         }
       }
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -71,7 +77,7 @@ class _SignUpState extends State<SignUp> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
+              SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Image.asset(
                     "images/aifarm.jpg",
@@ -160,16 +166,18 @@ class _SignUpState extends State<SignUp> {
                         height: 30.0,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          if (_formkey.currentState!.validate()) {
-                            setState(() {
-                              email = mailcontroller.text;
-                              name = namecontroller.text;
-                              password = passwordcontroller.text;
-                            });
-                          }
-                          registration();
-                        },
+                        onTap: isLoading
+                            ? null
+                            : () {
+                                if (_formkey.currentState!.validate()) {
+                                  setState(() {
+                                    email = mailcontroller.text;
+                                    name = namecontroller.text;
+                                    password = passwordcontroller.text;
+                                  });
+                                }
+                                registration();
+                              },
                         child: Container(
                             width: MediaQuery.of(context).size.width,
                             padding: const EdgeInsets.symmetric(
@@ -177,14 +185,18 @@ class _SignUpState extends State<SignUp> {
                             decoration: BoxDecoration(
                                 color: Colors.green,
                                 borderRadius: BorderRadius.circular(30)),
-                            child: const Center(
-                                child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22.0,
-                                  fontWeight: FontWeight.w500),
-                            ))),
+                            child: Center(
+                                child: !isLoading
+                                    ? const Text(
+                                        "Sign Up",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22.0,
+                                            fontWeight: FontWeight.w500),
+                                      )
+                                    : const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ))),
                       ),
                     ],
                   ),
@@ -239,8 +251,10 @@ class _SignUpState extends State<SignUp> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LogIn()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LogIn()));
                     },
                     child: const Text(
                       "LogIn",

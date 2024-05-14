@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:farm_well/widgets/bottom_nav_bar.dart';
+import 'package:farm_well/widgets/main_layout.dart';
 import 'package:farm_well/screens/forgot_password.dart';
 // import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/services/auth.dart';
@@ -19,10 +18,10 @@ class LogIn extends StatefulWidget {
 class _LogInState extends State<LogIn> {
   String email = "", password = "";
 
-  TextEditingController mailcontroller = new TextEditingController();
-  TextEditingController passwordcontroller = new TextEditingController();
+  TextEditingController mailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
-  final _formkey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
   userLogin() async {
@@ -32,8 +31,8 @@ class _LogInState extends State<LogIn> {
     try {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const MainLayout()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -80,7 +79,7 @@ class _LogInState extends State<LogIn> {
               Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                 child: Form(
-                  key: _formkey,
+                  key: _formKey,
                   child: Column(
                     children: [
                       Container(
@@ -96,7 +95,7 @@ class _LogInState extends State<LogIn> {
                             }
                             return null;
                           },
-                          controller: mailcontroller,
+                          controller: mailController,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Email",
@@ -114,7 +113,7 @@ class _LogInState extends State<LogIn> {
                             color: const Color(0xFFedf0f8),
                             borderRadius: BorderRadius.circular(30)),
                         child: TextFormField(
-                          controller: passwordcontroller,
+                          controller: passwordController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please Enter Password';
@@ -136,10 +135,10 @@ class _LogInState extends State<LogIn> {
                         onTap: isLoading
                             ? null
                             : () {
-                                if (_formkey.currentState!.validate()) {
+                                if (_formKey.currentState!.validate()) {
                                   setState(() {
-                                    email = mailcontroller.text;
-                                    password = passwordcontroller.text;
+                                    email = mailController.text;
+                                    password = passwordController.text;
                                   });
                                 }
                                 userLogin();

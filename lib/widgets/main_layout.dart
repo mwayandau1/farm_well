@@ -3,15 +3,14 @@ import 'package:farm_well/screens/profile.dart';
 import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/screens/community.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+class MainLayout extends StatefulWidget {
+  const MainLayout({super.key});
   @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
+  State<MainLayout> createState() => _MainLayoutState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
 
   final List<Widget> _tabs = [
@@ -24,7 +23,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     // Extract the green color from the theme
-    final greenColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
       // appBar: AppBar(

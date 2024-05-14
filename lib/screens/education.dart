@@ -17,6 +17,8 @@ class _EducationalScreenState extends State<EducationalScreen> {
   final _contentController = TextEditingController();
   File? _imageFile;
 
+  bool isLoading = false;
+
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
@@ -27,6 +29,9 @@ class _EducationalScreenState extends State<EducationalScreen> {
   }
 
   void _submitForm(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
       // Save the content to your database or perform any other necessary actions
       final title = _titleController.text;
@@ -43,6 +48,9 @@ class _EducationalScreenState extends State<EducationalScreen> {
       return;
     }
     Navigator.pop(context);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -86,9 +94,11 @@ class _EducationalScreenState extends State<EducationalScreen> {
                 ),
                 const SizedBox(height: 16.0),
                 GestureDetector(
-                  onTap: () {
-                    _pickImage(ImageSource.gallery);
-                  },
+                  onTap: isLoading
+                      ? null
+                      : () {
+                          _pickImage(ImageSource.gallery);
+                        },
                   child: Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -123,13 +133,17 @@ class _EducationalScreenState extends State<EducationalScreen> {
                     backgroundColor: Colors.green, // Background color
                   ),
                   onPressed: () => _submitForm(context),
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.w500),
-                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          'Submit',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.w500),
+                        ),
                 ),
               ],
             ),
