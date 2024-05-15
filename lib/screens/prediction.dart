@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farm_well/services/image_upload.dart'; // Ensure this path is correct
 
 class PredictionScreen extends StatefulWidget {
   const PredictionScreen({super.key});
@@ -12,6 +14,7 @@ class PredictionScreen extends StatefulWidget {
 class _PredictionScreenState extends State<PredictionScreen> {
   File? _imageFile;
   String? _predictionResult;
+  bool _isLoading = false; // To show loading indicator
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
@@ -20,16 +23,44 @@ class _PredictionScreenState extends State<PredictionScreen> {
         _imageFile = File(pickedFile.path);
         _predictionResult = null; // Reset the prediction result
       });
-      // Call your prediction function here
     }
   }
 
-  void _predictDisease() {
-    // Call your prediction function here
-    // Set the _predictionResult based on the prediction logic
+  Future<void> _predictDisease() async {
     setState(() {
-      _predictionResult =
-          'Predicted Disease: Leaf Blight'; // Replace with actual prediction result
+      _isLoading = true; // Show loading indicator
+    });
+
+    if (_imageFile != null) {
+      String imageUrl = await uploadImageToFirebase(_imageFile!);
+
+      if (imageUrl.isNotEmpty) {
+        // Simulate a prediction process
+        await Future.delayed(const Duration(seconds: 2));
+        const prediction =
+            'Predicted Disease: Leaf Blight'; // Replace with actual prediction logic
+
+        // Store prediction result in Firestore
+        await FirebaseFirestore.instance.collection('predictions').add({
+          'image_path': imageUrl,
+          'prediction': prediction,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        setState(() {
+          _predictionResult = prediction; // Set the prediction result
+        });
+      } else {
+        // Handle the case where image upload failed
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Image upload failed. Please try again.')),
+        );
+      }
+    }
+
+    setState(() {
+      _isLoading = false; // Hide loading indicator
     });
   }
 
@@ -78,7 +109,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Make sure the entire leave is in the frame and\nthat the image is clear.',
+                          'Make sure the entire leaf is in the frame and\nthat the image is clear.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -127,6 +158,11 @@ class _PredictionScreenState extends State<PredictionScreen> {
                           ),
                           child: const Text('Predict'),
                         ),
+                        if (_isLoading)
+                          const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(),
+                          ),
                         if (_predictionResult != null)
                           Padding(
                             padding: const EdgeInsets.all(16.0),
