@@ -10,18 +10,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<PredictionResult> recentPredictionResults = [
-    // Replace with your actual prediction result data
-    PredictionResult(
-      image: 'images/prediction1.jpeg',
-      result: 'Leaf Blight',
-    ),
-    PredictionResult(
-      image: 'images/prediction2.jpeg',
-      result: 'Powdery Mildew',
-    ),
-  ];
-
   String currentWeather = 'Sunny'; // Replace with your actual weather data
 
   @override
@@ -53,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text("");
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
@@ -155,28 +143,82 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 8.0),
-            ...recentPredictionResults.map((result) {
-              return Container(
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      result.image,
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection("predictions")
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          "images/noData.png",
+                          width: 250,
+                        ),
+                        const Text("No Prediction Results yet")
+                      ],
                     ),
-                    const SizedBox(width: 16.0),
-                    Text(
-                      'Predicted Disease: ${result.result}',
-                      style: const TextStyle(fontSize: 16.0),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
+                  );
+                } else {
+                  List<DocumentSnapshot> documents = snapshot.data!.docs;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0), // Add horizontal padding
+                    child: Column(
+                      children: documents.map((doc) {
+                        Map<String, dynamic> data =
+                            doc.data() as Map<String, dynamic>;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 12.0),
+                          padding: const EdgeInsets.all(
+                              8.0), // Add padding inside the container
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                            color: Colors.white,
+                          ),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image.network(
+                                  data['image_path'],
+                                  height: 100,
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              const SizedBox(width: 16.0),
+                              Expanded(
+                                child: Text(
+                                  ' ${data['prediction']}',
+                                  style: const TextStyle(fontSize: 16.0),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
                     ),
-                  ],
-                ),
-              );
-            }),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),

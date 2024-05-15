@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Tweet {
   final String question;
@@ -22,16 +23,10 @@ class CommunityScreen extends StatefulWidget {
 }
 
 class _CommunityScreenState extends State<CommunityScreen> {
-  List<Tweet> tweets = [
-    Tweet(
-      question: 'What could be causing the brown spots on my tomato leaves?',
-      author: 'Gardener123',
-      responses: [
-        'It could be a fungal infection. Try using a fungicide spray.',
-        'Are you watering them too much? Overwatering can cause leaf spots.',
-      ],
-    ),
-  ];
+  final CollectionReference messagesCollection =
+      FirebaseFirestore.instance.collection('messages');
+
+  final TextEditingController questionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,22 +34,74 @@ class _CommunityScreenState extends State<CommunityScreen> {
       appBar: AppBar(
         title: const Text('Community'),
       ),
-      body: ListView.builder(
-        itemCount: tweets.length,
-        itemBuilder: (context, index) {
-          return buildTweetCard(tweets[index]);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to a screen where users can ask a question
-        },
-        child: const Icon(Icons.add),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: questionController,
+              decoration: InputDecoration(
+                labelText: 'Ask a question',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: () async {
+                    if (questionController.text.isNotEmpty) {
+                      await messagesCollection.add({
+                        'question': questionController.text,
+                        'author': 'User', // Replace with actual user data
+                        'responses': [],
+                        'likes': 0,
+                        'timestamp': FieldValue.serverTimestamp(),
+                      });
+                      questionController.clear();
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: messagesCollection
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('No messages found.'));
+                }
+
+                final messages = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    final tweet = Tweet(
+                      question: message['question'],
+                      author: message['author'],
+                      responses: List<String>.from(message['responses']),
+                      likes: message['likes'],
+                    );
+                    return buildTweetCard(tweet, message.id);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget buildTweetCard(Tweet tweet) {
+  Widget buildTweetCard(Tweet tweet, String docId) {
     final commentController = TextEditingController();
 
     return Container(
@@ -79,8 +126,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const CircleAvatar(
-                backgroundImage: NetworkImage(
-                    'https://via.placeholder.com/50'), // Replace with actual avatar image
+                backgroundImage: NetworkImage('https://via.placeholder.com/50'),
               ),
               const SizedBox(width: 8.0),
               Expanded(
@@ -95,7 +141,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       ),
                     ),
                     Text(
-                      '@${tweet.author.toLowerCase()}', // Assuming author is a username
+                      '@${tweet.author.toLowerCase()}',
                       style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 14.0,
@@ -127,8 +173,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        'https://via.placeholder.com/50'), // Replace with actual avatar image
+                    backgroundImage:
+                        NetworkImage('https://via.placeholder.com/50'),
                   ),
                   const SizedBox(width: 8.0),
                   Expanded(
@@ -143,7 +189,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                           ),
                         ),
                         Text(
-                          '@${tweet.author.toLowerCase()}', // Assuming author is a username
+                          '@${tweet.author.toLowerCase()}',
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12.0,
@@ -160,82 +206,30 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.favorite_border,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        tweet.likes++;
-                      });
-                    },
-                  ),
-                  Text(
-                    '${tweet.likes}',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12.0,
-                    ),
-                  ),
                 ],
               ),
             );
           }),
           const SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.comment,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Comment'),
-                        content: TextFormField(
-                          controller: commentController,
-                          decoration: const InputDecoration(
-                            hintText: 'Type your comment...',
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              // Add comment logic here
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Submit'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+          TextField(
+            controller: commentController,
+            decoration: InputDecoration(
+              labelText: 'Write a response',
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.send),
+                onPressed: () async {
+                  if (commentController.text.isNotEmpty) {
+                    tweet.responses.add(commentController.text);
+                    await messagesCollection.doc(docId).update({
+                      'responses':
+                          FieldValue.arrayUnion([commentController.text]),
+                    });
+                    commentController.clear();
+                    setState(() {});
+                  }
                 },
               ),
-              IconButton(
-                icon: const Icon(
-                  Icons.favorite_border,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    tweet.likes++;
-                  });
-                },
-              ),
-              Text(
-                '${tweet.likes}',
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12.0,
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
