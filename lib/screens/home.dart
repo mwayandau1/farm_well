@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8.0),
             ...recentPredictionResults.map((result) {
               return Container(
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
+                margin: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Row(
                   children: [
                     Image.asset(
@@ -171,7 +171,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Predicted Disease: ${result.result}',
                       style: const TextStyle(fontSize: 16.0),
                       overflow: TextOverflow.ellipsis,
-                      softWrap: true,
                     ),
                   ],
                 ),

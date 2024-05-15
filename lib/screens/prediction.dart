@@ -44,13 +44,14 @@ class _PredictionScreenState extends State<PredictionScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset(
-                "images/plant_background.jpeg",
-                fit: BoxFit.cover,
+            if (_imageFile == null)
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Image.asset(
+                  "images/plant_background.jpeg",
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
             const SizedBox(height: 30.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -87,8 +88,8 @@ class _PredictionScreenState extends State<PredictionScreen> {
                         const SizedBox(height: 20),
                         ElevatedButton.icon(
                           onPressed: () => _pickImage(ImageSource.camera),
-                          icon: Icon(Icons.camera_alt),
-                          label: Text('Use Camera'),
+                          icon: const Icon(Icons.camera_alt),
+                          label: const Text('Use Camera'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
@@ -111,31 +112,40 @@ class _PredictionScreenState extends State<PredictionScreen> {
                         ),
                       ],
                     ),
-                  if (_imageFile != null) ...[
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _predictDisease,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: const Text('Predict'),
-                    ),
-                    if (_predictionResult != null)
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          _predictionResult!,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                  if (_imageFile != null)
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _predictDisease,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
+                          child: const Text('Predict'),
                         ),
-                      ),
-                  ],
+                        if (_predictionResult != null)
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Card(
+                              elevation: 4,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(
+                                  _predictionResult!,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                 ],
               ),
             ),
