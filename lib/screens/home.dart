@@ -135,11 +135,14 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             const SizedBox(height: 20.0),
-            const Text(
-              'Recent Prediction Results',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18.0,
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Recent Prediction Results',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                ),
               ),
             ),
             const SizedBox(height: 8.0),
