@@ -28,6 +28,12 @@ class _EducationalScreenState extends State<EducationalScreen> {
     }
   }
 
+  void _cancelImage() {
+    setState(() {
+      _imageFile = null;
+    });
+  }
+
   void _submitForm(BuildContext context) async {
     setState(() {
       isLoading = true;
@@ -123,6 +129,13 @@ class _EducationalScreenState extends State<EducationalScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        if (_imageFile != null) ...[
+                          const SizedBox(width: 8.0),
+                          GestureDetector(
+                            onTap: _cancelImage,
+                            child: const Icon(Icons.cancel, color: Colors.red),
+                          ),
+                        ]
                       ],
                     ),
                   ),
