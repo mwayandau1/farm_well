@@ -2,6 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:farm_well/screens/education.dart';
+import 'package:farm_well/screens/educational_content_detail.dart';
+import 'package:farm_well/screens/prediction_detail.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -63,56 +65,71 @@ class _HomeScreenState extends State<HomeScreen> {
                     items: documents.map((doc) {
                       Map<String, dynamic> data =
                           doc.data() as Map<String, dynamic>;
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Image.network(
-                                    data['image'],
-                                    height: 200,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          data['title'],
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4.0),
-                                        Text(
-                                          data['content'],
-                                          style:
-                                              const TextStyle(fontSize: 16.0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EducationalContentDetail(
+                                title: data['title'],
+                                content: data['content'],
+                                image: data['image'],
                               ),
                             ),
                           );
                         },
+                        child: Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Image.network(
+                                      data['image'],
+                                      height: 200,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            data['title'],
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.0,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4.0),
+                                          Text(
+                                            data['content'],
+                                            style:
+                                                const TextStyle(fontSize: 16.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       );
                     }).toList(),
                     options: CarouselOptions(
@@ -177,43 +194,56 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: documents.map((doc) {
                         Map<String, dynamic> data =
                             doc.data() as Map<String, dynamic>;
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 12.0),
-                          padding: const EdgeInsets.all(
-                              8.0), // Add padding inside the container
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                            color: Colors.white,
-                          ),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  data['image_path'],
-                                  height: 100,
-                                  width: 100,
-                                  fit: BoxFit.cover,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PredictionDetail(
+                                  prediction: data['prediction'],
+                                  imagePath: data['image_path'],
                                 ),
                               ),
-                              const SizedBox(width: 16.0),
-                              Expanded(
-                                child: Text(
-                                  ' ${data['prediction']}',
-                                  style: const TextStyle(fontSize: 16.0),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 12.0),
+                            padding: const EdgeInsets.all(
+                                8.0), // Add padding inside the container
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 3),
                                 ),
-                              ),
-                            ],
+                              ],
+                              color: Colors.white,
+                            ),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    data['image_path'],
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 16.0),
+                                Expanded(
+                                  child: Text(
+                                    ' ${data['prediction']}',
+                                    style: const TextStyle(fontSize: 16.0),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }).toList(),
@@ -238,14 +268,4 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-}
-
-class PredictionResult {
-  final String image;
-  final String result;
-
-  PredictionResult({
-    required this.image,
-    required this.result,
-  });
 }
