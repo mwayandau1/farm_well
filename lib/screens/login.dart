@@ -188,7 +188,7 @@ class _LogInState extends State<LogIn> {
                 height: 40.0,
               ),
               const Text(
-                "or LogIn with",
+                "or Log in with",
                 style: TextStyle(
                     color: Color(0xFF273671),
                     fontSize: 22.0,
@@ -233,7 +233,7 @@ class _LogInState extends State<LogIn> {
                           MaterialPageRoute(builder: (context) => SignUp()));
                     },
                     child: const Text(
-                      "SignUp",
+                      "Sign up",
                       style: TextStyle(
                           color: Color(0xFF273671),
                           fontSize: 20.0,
