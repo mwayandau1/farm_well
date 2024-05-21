@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_well/screens/login.dart';
+import 'package:farm_well/services/auth.dart';
 import 'package:farm_well/widgets/main_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -206,7 +207,7 @@ class _SignUpState extends State<SignUp> {
                 height: 40.0,
               ),
               const Text(
-                "or LogIn with",
+                "or Log in with",
                 style: TextStyle(
                     color: Color(0xFF273671),
                     fontSize: 22.0,
@@ -218,21 +219,17 @@ class _SignUpState extends State<SignUp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    "images/google.png",
-                    height: 45,
-                    width: 45,
-                    fit: BoxFit.cover,
+                  GestureDetector(
+                    onTap: () {
+                      AuthMethods().signInWithGoogle(context);
+                    },
+                    child: Image.asset(
+                      "images/google.png",
+                      height: 45,
+                      width: 45,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  const SizedBox(
-                    width: 30.0,
-                  ),
-                  Image.asset(
-                    "images/apple1.png",
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
-                  )
                 ],
               ),
               const SizedBox(
@@ -257,7 +254,7 @@ class _SignUpState extends State<SignUp> {
                               builder: (context) => const LogIn()));
                     },
                     child: const Text(
-                      "LogIn",
+                      "Log In",
                       style: TextStyle(
                           color: Color(0xFF273671),
                           fontSize: 20.0,

@@ -63,7 +63,6 @@ class _EducationalScreenState extends State<EducationalScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Educational Content'),
-        backgroundColor: Colors.green[800],
       ),
       body: SingleChildScrollView(
         child: Padding(
