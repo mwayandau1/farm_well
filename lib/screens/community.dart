@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
@@ -29,6 +30,14 @@ class _CommunityScreenState extends State<CommunityScreen> {
 
   final TextEditingController questionController = TextEditingController();
 
+  User? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +58,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     if (questionController.text.isNotEmpty) {
                       await messagesCollection.add({
                         'question': questionController.text,
-                        'author': 'User', // Replace with actual user data
+                        'author': currentUser!.displayName ?? 'Anonymous',
                         'responses': [],
                         'likes': 0,
                         'timestamp': FieldValue.serverTimestamp(),

@@ -67,7 +67,7 @@ class _LogInState extends State<LogIn> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
+              SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Image.asset(
                     "images/aifarm.jpg",
@@ -176,16 +176,16 @@ class _LogInState extends State<LogIn> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ForgotPassword()));
+                          builder: (context) => const ForgotPassword()));
                 },
-                child: const Text("Forgot Password?",
+                child: const Text("Forgot your password?",
                     style: TextStyle(
                         color: Color(0xFF8c8e98),
                         fontSize: 18.0,
                         fontWeight: FontWeight.w500)),
               ),
               const SizedBox(
-                height: 40.0,
+                height: 20.0,
               ),
               const Text(
                 "or Log in with",
@@ -214,7 +214,7 @@ class _LogInState extends State<LogIn> {
                 ],
               ),
               const SizedBox(
-                height: 40.0,
+                height: 30.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -229,8 +229,10 @@ class _LogInState extends State<LogIn> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => SignUp()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUp()));
                     },
                     child: const Text(
                       "Sign up",
