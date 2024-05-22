@@ -204,7 +204,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               const SizedBox(
-                height: 40.0,
+                height: 20.0,
               ),
               const Text(
                 "or Log in with",
@@ -214,7 +214,7 @@ class _SignUpState extends State<SignUp> {
                     fontWeight: FontWeight.w500),
               ),
               const SizedBox(
-                height: 30.0,
+                height: 20.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -233,7 +233,7 @@ class _SignUpState extends State<SignUp> {
                 ],
               ),
               const SizedBox(
-                height: 40.0,
+                height: 20.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -254,7 +254,7 @@ class _SignUpState extends State<SignUp> {
                               builder: (context) => const LogIn()));
                     },
                     child: const Text(
-                      "Log In",
+                      "Log in",
                       style: TextStyle(
                           color: Color(0xFF273671),
                           fontSize: 20.0,
