@@ -1,21 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
-
-class Tweet {
-  final String question;
-  final String author;
-  final List<String> responses;
-  int likes;
-
-  Tweet({
-    required this.question,
-    required this.author,
-    required this.responses,
-    this.likes = 0,
-  });
-}
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -27,9 +12,7 @@ class CommunityScreen extends StatefulWidget {
 class _CommunityScreenState extends State<CommunityScreen> {
   final CollectionReference messagesCollection =
       FirebaseFirestore.instance.collection('messages');
-
   final TextEditingController questionController = TextEditingController();
-
   User? currentUser;
 
   @override
@@ -55,13 +38,16 @@ class _CommunityScreenState extends State<CommunityScreen> {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: () async {
-                    if (questionController.text.isNotEmpty) {
+                    if (questionController.text.isNotEmpty &&
+                        currentUser != null) {
                       await messagesCollection.add({
                         'question': questionController.text,
                         'author': currentUser!.displayName ?? 'Anonymous',
                         'responses': [],
                         'likes': 0,
                         'timestamp': FieldValue.serverTimestamp(),
+                      }).catchError((error) {
+                        print("Failed to add question: $error");
                       });
                       questionController.clear();
                     }
@@ -233,6 +219,8 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     await messagesCollection.doc(docId).update({
                       'responses':
                           FieldValue.arrayUnion([commentController.text]),
+                    }).catchError((error) {
+                      print("Failed to add response: $error");
                     });
                     commentController.clear();
                     setState(() {});
@@ -245,4 +233,18 @@ class _CommunityScreenState extends State<CommunityScreen> {
       ),
     );
   }
+}
+
+class Tweet {
+  final String question;
+  final String author;
+  final List<String> responses;
+  int likes;
+
+  Tweet({
+    required this.question,
+    required this.author,
+    required this.responses,
+    this.likes = 0,
+  });
 }

@@ -12,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String currentWeather = 'Sunny'; // Replace with your actual weather data
+  String currentWeather = 'Sunny';
 
   @override
   Widget build(BuildContext context) {
