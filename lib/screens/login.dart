@@ -24,6 +24,8 @@ class _LogInState extends State<LogIn> {
   final _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
+  bool _obscureText = true; // Track password visibility
+
   userLogin() async {
     setState(() {
       isLoading = true;
@@ -120,12 +122,24 @@ class _LogInState extends State<LogIn> {
                             }
                             return null;
                           },
-                          decoration: const InputDecoration(
+                          obscureText: _obscureText, // Bind to _obscureText
+                          decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Password",
-                              hintStyle: TextStyle(
-                                  color: Color(0xFFb2b7bf), fontSize: 18.0)),
-                          obscureText: true,
+                              hintStyle: const TextStyle(
+                                  color: Color(0xFFb2b7bf), fontSize: 18.0),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              )),
                         ),
                       ),
                       const SizedBox(
