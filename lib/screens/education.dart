@@ -70,12 +70,15 @@ class _EducationalScreenState extends State<EducationalScreen> {
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextFormField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Title',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -87,9 +90,11 @@ class _EducationalScreenState extends State<EducationalScreen> {
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _contentController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Content',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                   ),
                   maxLines: 5,
                   validator: (value) {
@@ -101,16 +106,17 @@ class _EducationalScreenState extends State<EducationalScreen> {
                 ),
                 const SizedBox(height: 16.0),
                 GestureDetector(
-                  onTap: isLoading
-                      ? null
-                      : () {
-                          _pickImage(ImageSource.gallery);
-                        },
+                  onTap:
+                      isLoading ? null : () => _pickImage(ImageSource.gallery),
                   child: Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(
+                        color: Colors.grey[400]!,
+                        width: 1.0,
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -134,7 +140,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
                             onTap: _cancelImage,
                             child: const Icon(Icons.cancel, color: Colors.red),
                           ),
-                        ]
+                        ],
                       ],
                     ),
                   ),
@@ -153,32 +159,35 @@ class _EducationalScreenState extends State<EducationalScreen> {
                     ),
                   ),
                 const SizedBox(height: 16.0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[800],
-                    minimumSize: const Size.fromHeight(50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
+                    onPressed: () => _submitForm(context),
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : const Text(
+                            'Submit',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
-                  onPressed: () => _submitForm(context),
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 3,
-                          ),
-                        )
-                      : const Text(
-                          'Submit',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                 ),
               ],
             ),

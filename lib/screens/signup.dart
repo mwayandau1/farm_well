@@ -14,21 +14,21 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   String email = "", password = "", name = "";
-  TextEditingController namecontroller = TextEditingController();
-  TextEditingController passwordcontroller = TextEditingController();
-  TextEditingController mailcontroller = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController mailController = TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
   bool isLoading = false;
-  bool _obscureText = true; // Track password visibility
+  bool _obscureText = true;
 
   registration() async {
     setState(() {
       isLoading = true;
     });
     if (password != "" &&
-        namecontroller.text != "" &&
-        mailcontroller.text != "") {
+        nameController.text != "" &&
+        mailController.text != "") {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
@@ -38,7 +38,7 @@ class _SignUpState extends State<SignUp> {
           style: TextStyle(fontSize: 20.0),
         )));
         await FirebaseFirestore.instance.collection("user").add({
-          'username': namecontroller.text,
+          'username': nameController.text,
           'email': userCredential.user!.email,
         });
         // ignore: use_build_context_synchronously
@@ -107,7 +107,7 @@ class _SignUpState extends State<SignUp> {
                             }
                             return null;
                           },
-                          controller: namecontroller,
+                          controller: nameController,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Name",
@@ -131,7 +131,7 @@ class _SignUpState extends State<SignUp> {
                             }
                             return null;
                           },
-                          controller: mailcontroller,
+                          controller: mailController,
                           decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Email",
@@ -155,7 +155,7 @@ class _SignUpState extends State<SignUp> {
                             }
                             return null;
                           },
-                          controller: passwordcontroller,
+                          controller: passwordController,
                           obscureText: _obscureText, // Bind to _obscureText
                           decoration: InputDecoration(
                               border: InputBorder.none,
@@ -185,9 +185,9 @@ class _SignUpState extends State<SignUp> {
                             : () {
                                 if (_formkey.currentState!.validate()) {
                                   setState(() {
-                                    email = mailcontroller.text;
-                                    name = namecontroller.text;
-                                    password = passwordcontroller.text;
+                                    email = mailController.text;
+                                    name = nameController.text;
+                                    password = passwordController.text;
                                   });
                                 }
                                 registration();
