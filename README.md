@@ -30,7 +30,7 @@ bash
 Copy code
 git clone https://github.com/mwayandau1/farm_well.git
 cd ai-farming-app
-Install Dependencies
+### Install Dependencies
 
 bash
 Copy code
@@ -56,21 +56,14 @@ dependencies:
   cloud_firestore: latest_version
   firebase_storage: latest_version
   Add other dependencies as needed
-## Run the App
 
-bash
-Copy code
-flutter run
+
 ## 📱 Usage
 ### Disease Prediction: Upload images of crops/plants and let the AI model predict potential diseases.
 - Precautions and Treatments: Get actionable advice on how to prevent and treat detected diseases.
 - Educational Content: Browse through articles, videos, and tutorials on various farming topics.
 - Community Interaction: Join discussions, ask questions, and share knowledge with fellow farmers.
-## 🤝 Contributing
-We welcome contributions! Please see our CONTRIBUTING.md for guidelines on how to contribute to this project.
 
-## 📄 License
-This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## 📧 Contact
 For questions or suggestions, please contact us at mosesayandau1@gmail.com.
