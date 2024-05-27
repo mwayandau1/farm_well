@@ -79,6 +79,8 @@ flutter:
     - images/citrus_greening.jpeg
     - images/prediction1.jpeg
     - images/prediction2.jpeg
+    - assets/trained_model.tflite
+    - assets/labels.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

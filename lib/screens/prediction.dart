@@ -2,7 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:farm_well/services/image_upload.dart'; // Ensure this path is correct
+import 'package:flutter_tflite/flutter_tflite.dart';
+import 'package:farm_well/services/predictImageUpload.dart'; // Ensure this path is correct
 
 class PredictionScreen extends StatefulWidget {
   const PredictionScreen({super.key});
@@ -15,6 +16,20 @@ class _PredictionScreenState extends State<PredictionScreen> {
   File? _imageFile;
   String? _predictionResult;
   bool _isLoading = false; // To show loading indicator
+
+  @override
+  void initState() {
+    super.initState();
+    _loadModel();
+  }
+
+  Future<void> _loadModel() async {
+    String? res = await Tflite.loadModel(
+      model: "assets/trained_model.tflite",
+      labels: "assets/labels.txt",
+    );
+    print(res);
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
@@ -35,23 +50,40 @@ class _PredictionScreenState extends State<PredictionScreen> {
       String imageUrl = await uploadImageToFirebase(_imageFile!);
 
       if (imageUrl.isNotEmpty) {
-        // Simulate a prediction process
-        await Future.delayed(const Duration(seconds: 2));
-        const prediction =
-            'Predicted Disease: Leaf Blight'; // Replace with actual prediction logic
+        var recognitions = await Tflite.runModelOnImage(
+          path: _imageFile!.path,
+          imageMean: 0.0,
+          imageStd: 255.0,
+          numResults: 1,
+          threshold: 0.2,
+          asynch: true,
+        );
 
-        // Store prediction result in Firestore
-        await FirebaseFirestore.instance.collection('predictions').add({
-          'image_path': imageUrl,
-          'prediction': prediction,
-          'timestamp': FieldValue.serverTimestamp(),
-        });
+        if (recognitions != null && recognitions.isNotEmpty) {
+          final recognition = recognitions.first;
+          final String label = recognition['label'];
+          final double confidence = recognition['confidence'];
 
-        setState(() {
-          _predictionResult = prediction; // Set the prediction result
-        });
+          final prediction =
+              'Predicted Disease: $label\nConfidence: ${(confidence * 100).toStringAsFixed(2)}%';
+
+          // Store prediction result in Firestore
+          await FirebaseFirestore.instance.collection('predictions').add({
+            'image_url': imageUrl,
+            'prediction': prediction,
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+
+          setState(() {
+            _predictionResult = prediction; // Set the prediction result
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Prediction failed. Please try again.')),
+          );
+        }
       } else {
-        // Handle the case where image upload failed
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Image upload failed. Please try again.')),
@@ -62,6 +94,12 @@ class _PredictionScreenState extends State<PredictionScreen> {
     setState(() {
       _isLoading = false; // Hide loading indicator
     });
+  }
+
+  @override
+  void dispose() {
+    Tflite.close();
+    super.dispose();
   }
 
   @override
