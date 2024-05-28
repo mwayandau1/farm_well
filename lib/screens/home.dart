@@ -307,34 +307,3 @@ class PredictionCard extends StatelessWidget {
     );
   }
 }
-
-class PredictionDetail extends StatelessWidget {
-  final String prediction;
-  final String imagePath;
-
-  const PredictionDetail(
-      {super.key, required this.prediction, required this.imagePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Prediction Detail"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Image.network(imagePath), // Ensure the correct field is used
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                prediction,
-                style: const TextStyle(fontSize: 18.0),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
