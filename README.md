@@ -8,7 +8,6 @@ Welcome to the AI-Powered Mobile Farming Application! This application is design
 - Community Interaction: Connect and interact with other farmers, share experiences, and ask for advice within the community.
 ## 🛠️ Technologies Used
 - Tensorflow: Python framework for training the model
-- Vision Transformer: Model architecture in which the dataset was trained on
 - Flutter: A UI toolkit for crafting natively compiled applications for mobile, web, and desktop from a single codebase.
 - Firebase: A platform developed by Google for creating mobile and web applications.
 - Firebase Auth: Secure authentication system that provides a way to authenticate users of the application.
