@@ -36,7 +36,7 @@ Copy code
 flutter pub get
 Set Up Firebase
 
-Create a new project in the Firebase Console.
+### Create a new project in the Firebase Console.
 - Add an Android and/or iOS app to your Firebase project.
 - Follow the instructions to download the google-services.json (for Android) and/or GoogleService-Info.plist (for iOS) and place them in the appropriate directories:
 android/app/google-services.json
