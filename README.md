@@ -15,7 +15,7 @@ Welcome to the AI-Powered Mobile Farming Application! This application is design
 - Firebase Storage: Store and serve user-generated content, such as images
 
 ## 📱 Usage
-### Disease Prediction: Upload images of crops/plants and let the AI model predict potential diseases.
+- Disease Prediction: Upload images of crops/plants and let the AI model predict potential diseases.
 - Precautions and Treatments: Get actionable advice on how to prevent and treat detected diseases.
 - Educational Content: Browse through articles, videos, and tutorials on various farming topics.
 - Community Interaction: Join discussions, ask questions, and share knowledge with fellow farmers.
