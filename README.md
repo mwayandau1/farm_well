@@ -6,6 +6,7 @@ Welcome to the AI-Powered Mobile Farming Application! This application is design
 - Precautions and Treatments: Receive expert recommendations for disease prevention and treatment.
 - Educational Content: Access a library of educational resources to learn about best farming practices, crop management, and more.
 - Community Interaction: Connect and interact with other farmers, share experiences, and ask for advice within the community.
+- Farmers profile: Users have account information such as farm size, type of crops, crop yield per year
 ## 🛠️ Technologies Used
 - Tensorflow: Python framework for training the model
 - Flutter: A UI toolkit for crafting natively compiled applications for mobile, web, and desktop from a single codebase.
