@@ -11,7 +11,7 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   String email = "";
-  TextEditingController mailcontroller = new TextEditingController();
+  TextEditingController mailcontroller = TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
@@ -147,7 +147,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => SignUp()));
+                                          builder: (context) => const SignUp()));
                                 },
                                 child: const Text(
                                   "Create",
