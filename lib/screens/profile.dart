@@ -17,7 +17,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.green[800],
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -98,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: const Text(
                   'Sign Out',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 117, 44, 44),
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
                   ),
