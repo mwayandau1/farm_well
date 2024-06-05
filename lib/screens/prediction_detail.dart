@@ -6,10 +6,10 @@ class PredictionDetail extends StatelessWidget {
   final String imagePath;
 
   const PredictionDetail({
-    Key? key,
+    super.key,
     required this.prediction,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
