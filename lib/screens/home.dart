@@ -5,6 +5,9 @@ import 'package:farm_well/screens/education.dart';
 import 'package:farm_well/screens/educational_content_detail.dart';
 import 'package:farm_well/screens/prediction_detail.dart';
 
+// Assuming you have a WeatherScreen defined in another file.
+import 'package:farm_well/screens/weather.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -26,7 +29,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            WeatherInfo(currentWeather: currentWeather),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WeatherScreen(),
+                  ),
+                );
+              },
+              child: WeatherInfo(currentWeather: currentWeather),
+            ),
             const SizedBox(height: 16),
             const EducationalContentSection(),
             const SizedBox(height: 20.0),
