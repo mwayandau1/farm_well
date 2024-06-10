@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:farm_well/screens/education.dart';
 import 'package:farm_well/screens/educational_content_detail.dart';
 import 'package:farm_well/screens/prediction_detail.dart';
+import 'package:farm_well/services/weather.dart';
 
-// Assuming you have a WeatherScreen defined in another file.
 import 'package:farm_well/screens/weather.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +16,49 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String currentWeather = 'Sunny';
+  String description = 'Loading...';
+  double temperature = 0.0;
+  IconData weatherIcon = Icons.wb_sunny; // Default icon
+  final WeatherService weatherService = WeatherService();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentWeather();
+  }
+
+  Future<void> _fetchCurrentWeather() async {
+    try {
+      final weatherData = await weatherService.fetchWeather(
+          'Kumasi'); // You can make the location dynamic if needed
+      setState(() {
+        description = weatherData['weather'][0]['description'];
+        temperature = weatherData['main']['temp'];
+        weatherIcon = _getWeatherIcon(weatherData['weather'][0]['main']);
+      });
+    } catch (e) {
+      setState(() {
+        description = 'Error fetching weather';
+      });
+    }
+  }
+
+  IconData _getWeatherIcon(String main) {
+    switch (main.toLowerCase()) {
+      case 'clear':
+        return Icons.wb_sunny;
+      case 'rain':
+        return Icons.grain;
+      case 'clouds':
+        return Icons.cloud;
+      case 'snow':
+        return Icons.ac_unit;
+      case 'thunderstorm':
+        return Icons.flash_on;
+      default:
+        return Icons.wb_sunny; // Default icon
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
-              child: WeatherInfo(currentWeather: currentWeather),
+              child: WeatherInfo(
+                description: description,
+                temperature: temperature,
+                weatherIcon: weatherIcon,
+              ),
             ),
             const SizedBox(height: 16),
             const EducationalContentSection(),
@@ -77,21 +123,63 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class WeatherInfo extends StatelessWidget {
-  final String currentWeather;
+  final String description;
+  final double temperature;
+  final IconData weatherIcon;
 
-  const WeatherInfo({super.key, required this.currentWeather});
+  const WeatherInfo({
+    super.key,
+    required this.description,
+    required this.temperature,
+    required this.weatherIcon,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.green,
       padding: const EdgeInsets.all(16.0),
-      child: Text(
-        'Current Weather: $currentWeather',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18.0,
-        ),
+      decoration: BoxDecoration(
+        color: Colors.blueAccent,
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Current Weather',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18.0,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Row(
+            children: [
+              Icon(weatherIcon, color: Colors.white, size: 48.0),
+              const SizedBox(width: 16.0),
+              Text(
+                '${temperature.toStringAsFixed(1)}°C',
+                style: const TextStyle(
+                  fontSize: 48.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 16.0),
+              Expanded(
+                child: Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
