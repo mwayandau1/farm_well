@@ -9,63 +9,93 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  final TextEditingController _cityController = TextEditingController();
   late Future<Map<String, dynamic>> weatherData;
   late Future<List<Map<String, dynamic>>> forecastData;
   final WeatherService weatherService = WeatherService();
+  String _city = 'Kumasi'; // Default city
 
   @override
   void initState() {
     super.initState();
-    weatherData = weatherService.fetchWeather('Kumasi');
-    forecastData = weatherService.fetchForecast('Kumasi');
+    _fetchWeatherData();
+  }
+
+  void _fetchWeatherData() {
+    setState(() {
+      weatherData = weatherService.fetchWeather(_city);
+      forecastData = weatherService.fetchForecast(_city);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Weather forecast"),
+        title: const Text("Weather Forecast"),
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: weatherData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Error fetching weather data'));
-          } else {
-            final weather = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  WeatherHeader(weather: weather),
-                  const SizedBox(height: 20),
-                  WeatherDetail(weather: weather),
-                  const SizedBox(height: 20),
-                  FutureBuilder<List<Map<String, dynamic>>>(
-                    future: forecastData,
-                    builder: (context, forecastSnapshot) {
-                      if (forecastSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (forecastSnapshot.hasError) {
-                        return const Center(
-                            child: Text('Error fetching forecast data'));
-                      } else {
-                        final forecast = forecastSnapshot.data!;
-                        return NextFourDaysForecast(forecastData: forecast);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  const ProTip(),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _cityController,
+              decoration: const InputDecoration(
+                labelText: 'Enter city name',
+                border: OutlineInputBorder(),
               ),
-            );
-          }
-        },
+              onSubmitted: (value) {
+                setState(() {
+                  _city = value;
+                  _fetchWeatherData();
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: weatherData,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                        child: Text('Error fetching weather data'));
+                  } else {
+                    final weather = snapshot.data!;
+                    return ListView(
+                      children: [
+                        WeatherHeader(weather: weather),
+                        const SizedBox(height: 20),
+                        WeatherDetail(weather: weather),
+                        const SizedBox(height: 20),
+                        FutureBuilder<List<Map<String, dynamic>>>(
+                          future: forecastData,
+                          builder: (context, forecastSnapshot) {
+                            if (forecastSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            } else if (forecastSnapshot.hasError) {
+                              return const Center(
+                                  child: Text('Error fetching forecast data'));
+                            } else {
+                              final forecast = forecastSnapshot.data!;
+                              return NextFourDaysForecast(
+                                  forecastData: forecast);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        const ProTip(),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -82,7 +112,7 @@ class WeatherHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Kumasi, ${DateTime.now().toString().split(' ')[0]}',
+          '${weather['name']}, ${DateTime.now().toString().split(' ')[0]}',
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
