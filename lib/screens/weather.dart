@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:farm_well/services/weather.dart';
 
-class WeatherScreen extends StatelessWidget {
+class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
+
+  @override
+  _WeatherScreenState createState() => _WeatherScreenState();
+}
+
+class _WeatherScreenState extends State<WeatherScreen> {
+  late Future<Map<String, dynamic>> weatherData;
+  late Future<List<Map<String, dynamic>>> forecastData;
+  final WeatherService weatherService = WeatherService();
+
+  @override
+  void initState() {
+    super.initState();
+    weatherData = weatherService.fetchWeather('Kumasi');
+    forecastData = weatherService.fetchForecast('Kumasi');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,57 +26,87 @@ class WeatherScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Weather forecast"),
       ),
-      body: const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            WeatherHeader(),
-            SizedBox(height: 20),
-            WeatherDetail(),
-            SizedBox(height: 20),
-            NextFourDaysForecast(),
-            SizedBox(height: 20),
-            ProTip(),
-          ],
-        ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: weatherData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Error fetching weather data'));
+          } else {
+            final weather = snapshot.data!;
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WeatherHeader(weather: weather),
+                  const SizedBox(height: 20),
+                  WeatherDetail(weather: weather),
+                  const SizedBox(height: 20),
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: forecastData,
+                    builder: (context, forecastSnapshot) {
+                      if (forecastSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (forecastSnapshot.hasError) {
+                        return const Center(
+                            child: Text('Error fetching forecast data'));
+                      } else {
+                        final forecast = forecastSnapshot.data!;
+                        return NextFourDaysForecast(forecastData: forecast);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  const ProTip(),
+                ],
+              ),
+            );
+          }
+        },
       ),
     );
   }
 }
 
 class WeatherHeader extends StatelessWidget {
-  const WeatherHeader({super.key});
+  final Map<String, dynamic> weather;
+
+  const WeatherHeader({super.key, required this.weather});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Kumasi, 6 Jun',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          'Kumasi, ${DateTime.now().toString().split(' ')[0]}',
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           children: [
             Text(
-              '30°C',
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              '${weather['main']['temp']}°C',
+              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
             ),
-            Spacer(),
+            const Spacer(),
             Column(
               children: [
-                Icon(Icons.cloud, size: 48),
-                Text('31°C / 22°C'),
+                const Icon(Icons.cloud,
+                    size: 48), // Change based on weather condition
+                Text(
+                    '${weather['main']['temp_max']}°C / ${weather['main']['temp_min']}°C'),
               ],
             ),
           ],
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
-          'Sunset 18:20',
-          style: TextStyle(fontSize: 16),
+          'Sunset ${DateTime.fromMillisecondsSinceEpoch(weather['sys']['sunset'] * 1000).toLocal().toString().split(' ')[1].substring(0, 5)}',
+          style: const TextStyle(fontSize: 16),
         ),
       ],
     );
@@ -67,34 +114,36 @@ class WeatherHeader extends StatelessWidget {
 }
 
 class WeatherDetail extends StatelessWidget {
-  const WeatherDetail({super.key});
+  final Map<String, dynamic> weather;
+
+  const WeatherDetail({super.key, required this.weather});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'It is cloudy today.',
-          style: TextStyle(fontSize: 18),
+          weather['weather'][0]['description'],
+          style: const TextStyle(fontSize: 18),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           children: [
-            Text(
+            const Text(
               'Today would be a bad day for:',
               style: TextStyle(fontSize: 18),
             ),
-            Spacer(),
+            const Spacer(),
             Column(
               children: [
-                Icon(Icons.water_drop, size: 24),
-                Text('100%'),
+                const Icon(Icons.water_drop, size: 24),
+                Text('${weather['main']['humidity']}%'),
               ],
             ),
           ],
         ),
-        Text(
+        const Text(
           'APPLYING PESTICIDES.',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
@@ -104,29 +153,32 @@ class WeatherDetail extends StatelessWidget {
 }
 
 class NextFourDaysForecast extends StatelessWidget {
-  const NextFourDaysForecast({super.key});
+  final List<Map<String, dynamic>> forecastData;
+
+  const NextFourDaysForecast({super.key, required this.forecastData});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Next 4 days',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ForecastDay(day: 'Fri', temperature: '30°C', icon: Icons.cloud),
-            ForecastDay(day: 'Sat', temperature: '31°C', icon: Icons.foggy),
-            ForecastDay(day: 'Sun', temperature: '31°C', icon: Icons.foggy),
-            ForecastDay(day: 'Mon', temperature: '33°C', icon: Icons.cloud),
-          ],
+          children: forecastData.map((day) {
+            return ForecastDay(
+              day: day['day'],
+              temperature: '${day['temperature']}°C',
+              icon: day['icon'],
+            );
+          }).toList(),
         ),
-        SizedBox(height: 10),
-        Text(
+        const SizedBox(height: 10),
+        const Text(
           'Rain is forecast for tomorrow.',
           style: TextStyle(fontSize: 16),
         ),
