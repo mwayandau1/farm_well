@@ -5,6 +5,8 @@ import 'package:farm_well/screens/education.dart';
 import 'package:farm_well/screens/educational_content_detail.dart';
 import 'package:farm_well/screens/prediction_detail.dart';
 import 'package:farm_well/services/weather.dart';
+import 'package:farm_well/screens/all_educational_content_screen.dart';
+import 'package:farm_well/screens/all_prediction_screen.dart';
 
 import 'package:farm_well/screens/weather.dart';
 
@@ -88,18 +90,51 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
             const EducationalContentSection(),
-            const SizedBox(height: 20.0),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Recent Prediction Results',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const AllEducationalContentScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text('View All'),
                 ),
               ),
             ),
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Recent Prediction Results',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AllPredictionsScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('View All'),
+                  ),
+                ],
+              ),
+            ),
             const PredictionResultsSection(),
           ],
         ),
