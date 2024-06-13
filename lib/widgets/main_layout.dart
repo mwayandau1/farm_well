@@ -1,5 +1,5 @@
 import 'package:farm_well/screens/prediction.dart';
-import 'package:farm_well/screens/profile2.dart';
+import 'package:farm_well/screens/profile.dart';
 import 'package:farm_well/screens/home.dart';
 import 'package:farm_well/screens/community.dart';
 import 'package:flutter/material.dart';
