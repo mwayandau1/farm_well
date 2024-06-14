@@ -228,6 +228,8 @@ class EducationalContentSection extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("educational_content")
+          .orderBy('timestamp', descending: true)
+          .limit(3)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -293,6 +295,7 @@ class PredictionResultsSection extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection("predictions")
           .orderBy('timestamp', descending: true)
+          .limit(3)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

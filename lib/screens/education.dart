@@ -38,7 +38,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
     setState(() {
       isLoading = true;
     });
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && _imageFile != null) {
       final title = _titleController.text;
       final content = _contentController.text;
       final imageFile = _imageFile;
@@ -47,12 +47,18 @@ class _EducationalScreenState extends State<EducationalScreen> {
         "title": title,
         "content": content,
         "image": imageUrl,
+        'timestamp': FieldValue.serverTimestamp(),
       });
+
+      if (!context.mounted) return;
+      Navigator.pop(context);
+    } else {
+      if (_imageFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please upload an image')),
+        );
+      }
     }
-    if (!context.mounted) {
-      return;
-    }
-    Navigator.pop(context);
     setState(() {
       isLoading = false;
     });
@@ -169,7 +175,7 @@ class _EducationalScreenState extends State<EducationalScreen> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
-                    onPressed: () => _submitForm(context),
+                    onPressed: isLoading ? null : () => _submitForm(context),
                     child: isLoading
                         ? const SizedBox(
                             width: 24,
