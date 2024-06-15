@@ -5,39 +5,60 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthMethods {
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  getCurrentUser() async {
-    return auth.currentUser;
+  Future<User?> getCurrentUser() async {
+    return _auth.currentUser;
   }
 
-  signInWithGoogle(BuildContext context) async {
-    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+  Future<void> signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
 
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        // User canceled the sign-in
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Sign-in cancelled by user."),
+        ));
+        return;
+      }
 
-    final GoogleSignInAuthentication? googleSignInAuthentication =
-        await googleSignInAccount?.authentication;
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleSignInAuthentication?.idToken,
-        accessToken: googleSignInAuthentication?.accessToken);
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleSignInAuthentication.accessToken,
+      );
 
-    UserCredential result = await firebaseAuth.signInWithCredential(credential);
+      UserCredential result = await _auth.signInWithCredential(credential);
+      User? userDetails = result.user;
 
-    User? userDetails = result.user;
+      if (userDetails != null) {
+        Map<String, dynamic> userInfoMap = {
+          "email": userDetails.email,
+          "name": userDetails.displayName,
+          "imgUrl": userDetails.photoURL,
+          "id": userDetails.uid,
+        };
 
-    Map<String, dynamic> userInfoMap = {
-      "email": userDetails!.email,
-      "name": userDetails.displayName,
-      "imgUrl": userDetails.photoURL,
-      "id": userDetails.uid
-    };
-    await DatabaseMethods().addUser(userDetails.uid, userInfoMap).then((value) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MainLayout()));
-    });
+        await DatabaseMethods()
+            .addUser(userDetails.uid, userInfoMap)
+            .then((value) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const MainLayout()));
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Google sign-in failed: User details are null."),
+        ));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Error signing in with Google: ${e.toString()}"),
+      ));
+    }
   }
 }
