@@ -35,6 +35,9 @@ class _CommunityScreenState extends State<CommunityScreen> {
               controller: questionController,
               decoration: InputDecoration(
                 labelText: 'Ask a question',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: () async {
@@ -56,6 +59,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
               ),
             ),
           ),
+          const Divider(),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: messagesCollection
@@ -103,17 +107,17 @@ class _CommunityScreenState extends State<CommunityScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withOpacity(0.1),
             spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 2),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
-      margin: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,6 +215,9 @@ class _CommunityScreenState extends State<CommunityScreen> {
             controller: commentController,
             decoration: InputDecoration(
               labelText: 'Write a response',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.send),
                 onPressed: () async {
