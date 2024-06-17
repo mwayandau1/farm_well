@@ -40,26 +40,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (data != null) {
           setState(() {
             _email = _user!.email;
-            _location = data.containsKey('location')
-                ? data['location'] as String?
-                : null;
-            _farmSize = data.containsKey('farmSize')
-                ? data['farmSize'] as String?
-                : null;
-            _farmType = data.containsKey('farmType')
-                ? data['farmType'] as String?
-                : null;
-            _alertsUpdates = data.containsKey('alertsUpdates')
-                ? data['alertsUpdates'] as bool
-                : false;
-            _marketing = data.containsKey('marketing')
-                ? data['marketing'] as bool
-                : false;
-            _content =
-                data.containsKey('content') ? data['content'] as bool : false;
-            _productUpdates = data.containsKey('productUpdates')
-                ? data['productUpdates'] as bool
-                : false;
+            _location = data['location'] ?? '';
+            _farmSize = data['farm_size'] ?? '';
+            _farmType = data['farm_type'] ?? '';
+            _alertsUpdates = data['alerts_updates'] ?? false;
+            _marketing = data['marketing'] ?? false;
+            _content = data['content'] ?? false;
+            _productUpdates = data['product_updates'] ?? false;
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -81,11 +68,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       DocumentSnapshot userDoc = await userDocRef.get();
 
       try {
+        // If the document exists, update it with the new data
         if (userDoc.exists) {
           await userDocRef.update(data);
-        } else {
-          await userDocRef
-              .set(data); // Create the document if it does not exist
+        }
+        // If the document doesn't exist, create a new document with the data
+        else {
+          await userDocRef.set(data);
         }
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('User data updated successfully.'),
@@ -106,11 +95,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () {
+              // Update the notification preference fields in Firestore
               _updateUserData({
-                'alertsUpdates': _alertsUpdates,
+                'alerts_updates': _alertsUpdates,
                 'marketing': _marketing,
                 'content': _content,
-                'productUpdates': _productUpdates,
+                'product_updates': _productUpdates,
               });
             },
             child: const Text(
@@ -127,13 +117,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: Text(_email ?? 'Email address'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              _showEditDialog('Email address', _email ?? '', (value) {
-                _user!.updateEmail(value).then((_) {
-                  setState(() {
-                    _email = value;
-                  });
-                });
-              });
+              // Show a dialog to edit the email address
+              _showEditDialog('Email address', _email ?? '', 'email');
             },
           ),
           ListTile(
@@ -141,12 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: Text(_location ?? 'Location'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              _showEditDialog('Location', _location ?? '', (value) {
-                setState(() {
-                  _location = value;
-                  _updateUserData({'location': value});
-                });
-              });
+              // Show a dialog to edit the location
+              _showEditDialog('Location', _location ?? '', 'location');
             },
           ),
           ListTile(
@@ -154,12 +135,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: Text(_farmSize ?? 'Farm size'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              _showEditDialog('Farm size', _farmSize ?? '', (value) {
-                setState(() {
-                  _farmSize = value;
-                  _updateUserData({'farmSize': value});
-                });
-              });
+              // Show a dialog to edit the farm size
+              _showEditDialog('Farm size', _farmSize ?? '', 'farm_size');
             },
           ),
           ListTile(
@@ -167,12 +144,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: Text(_farmType ?? 'Farm type'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              _showEditDialog('Farm type', _farmType ?? '', (value) {
-                setState(() {
-                  _farmType = value;
-                  _updateUserData({'farmType': value});
-                });
-              });
+              // Show a dialog to edit the farm type
+              _showEditDialog('Farm type', _farmType ?? '', 'farm_type');
             },
           ),
           const Padding(
@@ -239,8 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showEditDialog(
-      String title, String initialValue, Function(String) onSave) {
+  void _showEditDialog(String title, String initialValue, String fieldName) {
     TextEditingController controller =
         TextEditingController(text: initialValue);
     showDialog(
@@ -261,7 +233,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             TextButton(
               onPressed: () {
-                onSave(controller.text);
+                // Update the corresponding field in Firestore
+                _updateUserData({fieldName: controller.text});
                 Navigator.of(context).pop();
               },
               child: const Text('Save'),
