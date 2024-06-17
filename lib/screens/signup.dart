@@ -36,10 +36,23 @@ class _SignUpState extends State<SignUp> {
           "Registered Successfully",
           style: TextStyle(fontSize: 20.0),
         )));
-        await FirebaseFirestore.instance.collection("users").add({
+
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc(userCredential.user!.uid)
+            .set({
           'username': nameController.text,
           'email': userCredential.user!.email,
+          "role": "customer",
+          "location": "",
+          "farm_size": 0,
+          "farm_type": "",
+          "alerts_updates": true,
+          "marketing": true,
+          "content": true,
+          "product_updates": true
         });
+
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const MainLayout()));
