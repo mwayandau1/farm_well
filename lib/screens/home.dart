@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:farm_well/screens/education.dart';
 import 'package:farm_well/screens/educational_content_detail.dart';
@@ -22,11 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
   double temperature = 0.0;
   IconData weatherIcon = Icons.wb_sunny; // Default icon
   final WeatherService weatherService = WeatherService();
+  String userRole = '';
+  User? currentUser;
 
   @override
   void initState() {
     super.initState();
+    currentUser = FirebaseAuth.instance.currentUser;
     _fetchCurrentWeather();
+    _fetchUserRole();
   }
 
   Future<void> _fetchCurrentWeather() async {
@@ -42,6 +47,21 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         description = 'Error fetching weather';
       });
+    }
+  }
+
+  Future<void> _fetchUserRole() async {
+    if (currentUser != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          userRole = userDoc['role'];
+        });
+      }
     }
   }
 
@@ -139,19 +159,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const EducationalScreen(),
-            ),
-          );
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: userRole == 'admin'
+          ? FloatingActionButton(
+              foregroundColor: Colors.white,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EducationalScreen(),
+                  ),
+                );
+              },
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.add),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

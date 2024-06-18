@@ -109,6 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ],
+        centerTitle: true,
       ),
       body: ListView(
         children: [
