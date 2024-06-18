@@ -14,11 +14,28 @@ class _CommunityScreenState extends State<CommunityScreen> {
       FirebaseFirestore.instance.collection('messages');
   final TextEditingController questionController = TextEditingController();
   User? currentUser;
+  Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
     currentUser = FirebaseAuth.instance.currentUser;
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    if (currentUser != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          userData = userDoc.data() as Map<String, dynamic>;
+        });
+      }
+    }
   }
 
   @override
@@ -26,9 +43,11 @@ class _CommunityScreenState extends State<CommunityScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Community'),
+        centerTitle: true,
       ),
       body: Column(
         children: [
+          if (userData != null) buildProfileSection(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -45,7 +64,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                         currentUser != null) {
                       await messagesCollection.add({
                         'question': questionController.text,
-                        'author': currentUser!.displayName ?? 'Anonymous',
+                        'author': userData!['username'] ?? 'Anonymous',
                         'responses': [],
                         'likes': 0,
                         'timestamp': FieldValue.serverTimestamp(),
@@ -94,6 +113,32 @@ class _CommunityScreenState extends State<CommunityScreen> {
                   },
                 );
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildProfileSection() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Username: ${userData!['username']}',
+            style: const TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            'Email: ${userData!['email']}',
+            style: const TextStyle(
+              fontSize: 16.0,
+              color: Colors.grey,
             ),
           ),
         ],
