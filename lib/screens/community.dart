@@ -106,7 +106,9 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     final tweet = Tweet(
                       question: message['question'],
                       author: message['author'],
-                      responses: List<String>.from(message['responses']),
+                      responses: (message['responses'] as List<dynamic>)
+                          .map((response) => Response.fromMap(response))
+                          .toList(),
                       likes: message['likes'],
                     );
                     return buildTweetCard(tweet, message.id);
@@ -227,14 +229,14 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          tweet.author,
+                          response.author,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14.0,
                           ),
                         ),
                         Text(
-                          '@${tweet.author.toLowerCase()}',
+                          '@${response.author.toLowerCase()}',
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12.0,
@@ -242,7 +244,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                         ),
                         const SizedBox(height: 4.0),
                         Text(
-                          response,
+                          response.text,
                           style: const TextStyle(
                             fontSize: 16.0,
                             color: Colors.black87,
@@ -267,13 +269,18 @@ class _CommunityScreenState extends State<CommunityScreen> {
                 icon: const Icon(Icons.send),
                 onPressed: () async {
                   if (commentController.text.isNotEmpty) {
-                    tweet.responses.add(commentController.text);
+                    final response = Response(
+                      text: commentController.text,
+                      author: userData!['username'] ?? 'Anonymous',
+                    );
+                    tweet.responses.add(response);
+
                     await messagesCollection.doc(docId).update({
-                      'responses':
-                          FieldValue.arrayUnion([commentController.text]),
+                      'responses': FieldValue.arrayUnion([response.toMap()]),
                     }).catchError((error) {
                       print("Failed to add response: $error");
                     });
+
                     commentController.clear();
                     setState(() {});
                   }
@@ -290,7 +297,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
 class Tweet {
   final String question;
   final String author;
-  final List<String> responses;
+  final List<Response> responses;
   int likes;
 
   Tweet({
@@ -299,4 +306,25 @@ class Tweet {
     required this.responses,
     this.likes = 0,
   });
+}
+
+class Response {
+  final String text;
+  final String author;
+
+  Response({required this.text, required this.author});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'text': text,
+      'author': author,
+    };
+  }
+
+  factory Response.fromMap(Map<String, dynamic> map) {
+    return Response(
+      text: map['text'],
+      author: map['author'],
+    );
+  }
 }
