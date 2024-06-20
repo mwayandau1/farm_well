@@ -245,6 +245,14 @@ class WeatherInfo extends StatelessWidget {
 class EducationalContentSection extends StatelessWidget {
   const EducationalContentSection({super.key});
 
+  String truncateText(String text, int maxWords) {
+    List<String> words = text.split(' ');
+    if (words.length <= maxWords) {
+      return text;
+    }
+    return '${words.take(maxWords).join(' ')}...';
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -276,6 +284,9 @@ class EducationalContentSection extends StatelessWidget {
           return CarouselSlider(
             items: documents.map((doc) {
               Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+              String truncatedContent =
+                  truncateText(data['content'], 30); // Limiting to 30 words
+
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -289,7 +300,10 @@ class EducationalContentSection extends StatelessWidget {
                     ),
                   );
                 },
-                child: ContentCard(data: data),
+                child: ContentCard(
+                  data: data,
+                  truncatedContent: truncatedContent,
+                ),
               );
             }).toList(),
             options: CarouselOptions(
@@ -310,6 +324,14 @@ class EducationalContentSection extends StatelessWidget {
 
 class PredictionResultsSection extends StatelessWidget {
   const PredictionResultsSection({super.key});
+
+  String truncateText(String text, int maxWords) {
+    List<String> words = text.split(' ');
+    if (words.length <= maxWords) {
+      return text;
+    }
+    return '${words.take(maxWords).join(' ')}...';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -343,6 +365,9 @@ class PredictionResultsSection extends StatelessWidget {
             child: Column(
               children: documents.map((doc) {
                 Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                String truncatedPrediction = truncateText(
+                    data['prediction'], 20); // Limiting to 20 words
+
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -355,7 +380,10 @@ class PredictionResultsSection extends StatelessWidget {
                       ),
                     );
                   },
-                  child: PredictionCard(data: data),
+                  child: PredictionCard(
+                    data: data,
+                    truncatedPrediction: truncatedPrediction,
+                  ),
                 );
               }).toList(),
             ),
@@ -368,8 +396,13 @@ class PredictionResultsSection extends StatelessWidget {
 
 class ContentCard extends StatelessWidget {
   final Map<String, dynamic> data;
+  final String truncatedContent;
 
-  const ContentCard({super.key, required this.data});
+  const ContentCard({
+    super.key,
+    required this.data,
+    required this.truncatedContent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -408,7 +441,7 @@ class ContentCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    data['content'],
+                    truncatedContent,
                     style: const TextStyle(fontSize: 16.0),
                   ),
                 ],
@@ -423,8 +456,13 @@ class ContentCard extends StatelessWidget {
 
 class PredictionCard extends StatelessWidget {
   final Map<String, dynamic> data;
+  final String truncatedPrediction;
 
-  const PredictionCard({super.key, required this.data});
+  const PredictionCard({
+    super.key,
+    required this.data,
+    required this.truncatedPrediction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -457,7 +495,7 @@ class PredictionCard extends StatelessWidget {
           const SizedBox(width: 16.0),
           Expanded(
             child: Text(
-              data['prediction'],
+              truncatedPrediction,
               style: const TextStyle(fontSize: 16.0),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
