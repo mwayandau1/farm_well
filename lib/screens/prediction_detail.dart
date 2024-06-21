@@ -21,7 +21,10 @@ class PredictionDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Image.network(imagePath, height: 250, fit: BoxFit.cover),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Image.network(imagePath, height: 250, fit: BoxFit.cover),
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
