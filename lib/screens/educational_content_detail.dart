@@ -23,7 +23,10 @@ class EducationalContentDetail extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Image.network(image, height: 250, fit: BoxFit.cover),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Image.network(image, height: 250, fit: BoxFit.cover),
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
