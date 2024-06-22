@@ -47,7 +47,6 @@ class _CommunityScreenState extends State<CommunityScreen> {
       ),
       body: Column(
         children: [
-          if (userData != null) buildProfileSection(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -61,7 +60,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                   icon: const Icon(Icons.send),
                   onPressed: () async {
                     if (questionController.text.isNotEmpty &&
-                        currentUser != null) {
+                        userData != null) {
                       await messagesCollection.add({
                         'question': questionController.text,
                         'author': userData!['username'] ?? 'Anonymous',
@@ -115,32 +114,6 @@ class _CommunityScreenState extends State<CommunityScreen> {
                   },
                 );
               },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildProfileSection() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Username: ${userData!['username']}',
-            style: const TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4.0),
-          Text(
-            'Email: ${userData!['email']}',
-            style: const TextStyle(
-              fontSize: 16.0,
-              color: Colors.grey,
             ),
           ),
         ],
@@ -268,7 +241,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
               suffixIcon: IconButton(
                 icon: const Icon(Icons.send),
                 onPressed: () async {
-                  if (commentController.text.isNotEmpty) {
+                  if (commentController.text.isNotEmpty && userData != null) {
                     final response = Response(
                       text: commentController.text,
                       author: userData!['username'] ?? 'Anonymous',
