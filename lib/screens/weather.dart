@@ -13,7 +13,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   late Future<Map<String, dynamic>> weatherData;
   late Future<List<Map<String, dynamic>>> forecastData;
   final WeatherService weatherService = WeatherService();
-  String _city = 'Kumasi'; // Default city
+  String _city = 'Kumasi';
 
   @override
   void initState() {
@@ -87,7 +87,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        const ProTip(),
+                        // const ProTip(),
                       ],
                     );
                   }
