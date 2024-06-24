@@ -240,28 +240,28 @@ class ForecastDay extends StatelessWidget {
   }
 }
 
-class ProTip extends StatelessWidget {
-  const ProTip({super.key});
+// class ProTip extends StatelessWidget {
+//   const ProTip({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Pro-tip',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        Text(
-          'FRIDAY would be a bad day for:',
-          style: TextStyle(fontSize: 16),
-        ),
-        Text(
-          'APPLYING PESTICIDES.',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           'Pro-tip',
+//           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//         ),
+//         SizedBox(height: 10),
+//         Text(
+//           'FRIDAY would be a bad day for:',
+//           style: TextStyle(fontSize: 16),
+//         ),
+//         Text(
+//           'APPLYING PESTICIDES.',
+//           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//         ),
+//       ],
+//     );
+//   }
+// }
