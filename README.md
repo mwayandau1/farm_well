@@ -1,5 +1,5 @@
 # 🌾 AI-Powered Mobile Farming Application
-Welcome to the AI-Powered Mobile Farming Application! This application is designed to help farmers predict crop and plant diseases, provide precautions and recommended treatments, and offer educational content. Additionally, it enables farmers to interact with each other on the platform.
+Welcome to the AI-Powered Mobile Farming Application! This application is designed to help farmers predict crop and plant diseases, provide precautions and recommended treatments, and offer educational content. Additionally, it enables farmers to interact with each other on the platform. The application also provide real time weather information to farmers for better planning
 
 ## ✨ Features
 - Disease Prediction: Utilize AI to predict potential crop and plant diseases based on images and other inputs.
