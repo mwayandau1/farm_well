@@ -21,6 +21,9 @@ Welcome to the AI-Powered Mobile Farming Application! This application is design
 - Educational Content: Browse through articles, videos, and tutorials on various farming topics.
 - Community Interaction: Join discussions, ask questions, and share knowledge with fellow farmers.
 
+## Note
+- The model is not always 100% correct, it might get somethings wrong
+
 
 ## 📧 Contact
 For questions or suggestions, please contact us at mosesayandau1@gmail.com.
