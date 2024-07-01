@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:farm_well/services/predictImageUpload.dart'; // Ensure this path is correct
+import 'cure.dart'; // Import the Cure class
 
 class PredictionScreen extends StatefulWidget {
   const PredictionScreen({super.key});
@@ -15,7 +16,9 @@ class PredictionScreen extends StatefulWidget {
 class _PredictionScreenState extends State<PredictionScreen> {
   File? _imageFile;
   String? _predictionResult;
-  bool _isLoading = false; // To show loading indicator
+  bool _isLoading = false;
+  String? _diseaseLabel;
+  bool _isPredicting = false;
 
   @override
   void initState() {
@@ -42,58 +45,82 @@ class _PredictionScreenState extends State<PredictionScreen> {
   }
 
   Future<void> _predictDisease() async {
+    if (_isPredicting) return; // Prevent multiple simultaneous predictions
+
     setState(() {
       _isLoading = true; // Show loading indicator
+      _isPredicting = true;
     });
 
-    if (_imageFile != null) {
-      String imageUrl = await uploadImageToFirebase(_imageFile!);
+    try {
+      if (_imageFile != null) {
+        String imageUrl = await uploadImageToFirebase(_imageFile!);
 
-      if (imageUrl.isNotEmpty) {
-        var recognitions = await Tflite.runModelOnImage(
-          path: _imageFile!.path,
-          imageMean: 0.0,
-          imageStd: 255.0,
-          numResults: 1,
-          threshold: 0.2,
-          asynch: true,
-        );
+        if (imageUrl.isNotEmpty) {
+          var recognitions = await Tflite.runModelOnImage(
+            path: _imageFile!.path,
+            imageMean: 0.0,
+            imageStd: 255.0,
+            numResults: 1,
+            threshold: 0.2,
+            asynch: true,
+          );
 
-        if (recognitions != null && recognitions.isNotEmpty) {
-          final recognition = recognitions.first;
-          final String label = recognition['label'];
-          final double confidence = recognition['confidence'];
+          if (recognitions != null && recognitions.isNotEmpty) {
+            final recognition = recognitions.first;
+            final String label = recognition['label'];
+            final double confidence = recognition['confidence'];
 
-          final prediction =
-              'Predicted Disease: $label\nConfidence: ${(confidence * 100).toStringAsFixed(2)}%';
+            final prediction =
+                'Predicted Disease: $label\nConfidence: ${(confidence * 100).toStringAsFixed(2)}%';
 
-          // Store prediction result in Firestore
-          await FirebaseFirestore.instance.collection('predictions').add({
-            'image_url': imageUrl,
-            'prediction': prediction,
-            'timestamp': FieldValue.serverTimestamp(),
-          });
+            // Get the cure for the predicted disease
+            final cureText = Cure.getDiseaseCure(label);
 
-          setState(() {
-            _predictionResult = prediction; // Set the prediction result
-          });
+            // Store prediction result and cure in Firestore
+            await FirebaseFirestore.instance.collection('predictions').add({
+              'image_url': imageUrl,
+              'prediction': prediction,
+              'cure': cureText,
+              'timestamp': FieldValue.serverTimestamp(),
+            });
+
+            setState(() {
+              _predictionResult = prediction; // Set the prediction result
+              _diseaseLabel = label; // Set the disease label
+            });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Prediction failed. Please try again.')),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text('Prediction failed. Please try again.')),
+                content: Text('Image upload failed. Please try again.')),
           );
         }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Image upload failed. Please try again.')),
-        );
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+        _isPredicting = false;
+      });
     }
+  }
 
-    setState(() {
-      _isLoading = false; // Hide loading indicator
-    });
+  void _showCureModal(String disease) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Cure(disease);
+      },
+    );
   }
 
   @override
@@ -208,12 +235,34 @@ class _PredictionScreenState extends State<PredictionScreen> {
                               elevation: 4,
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Text(
-                                  _predictionResult!,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _predictionResult!,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (_diseaseLabel != null) {
+                                          _showCureModal(_diseaseLabel!);
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.orange,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      child: const Text('Show Cure'),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

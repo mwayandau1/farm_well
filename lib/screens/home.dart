@@ -8,7 +8,6 @@ import 'package:farm_well/screens/prediction_detail.dart';
 import 'package:farm_well/services/weather.dart';
 import 'package:farm_well/screens/all_educational_content_screen.dart';
 import 'package:farm_well/screens/all_prediction_screen.dart';
-
 import 'package:farm_well/screens/weather.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -367,6 +366,8 @@ class PredictionResultsSection extends StatelessWidget {
                 Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
                 String truncatedPrediction = truncateText(
                     data['prediction'], 20); // Limiting to 20 words
+                String truncatedCure =
+                    truncateText(data['cure'], 30); // Limiting to 30 words
 
                 return GestureDetector(
                   onTap: () {
@@ -375,7 +376,8 @@ class PredictionResultsSection extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => PredictionDetail(
                           prediction: data['prediction'],
-                          imagePath: data['image_url'], // Use 'image_url' here
+                          cure: data['cure'], // Ensure this line is included
+                          imagePath: data['image_url'],
                         ),
                       ),
                     );
@@ -383,6 +385,7 @@ class PredictionResultsSection extends StatelessWidget {
                   child: PredictionCard(
                     data: data,
                     truncatedPrediction: truncatedPrediction,
+                    truncatedCure: truncatedCure,
                   ),
                 );
               }).toList(),
@@ -457,51 +460,41 @@ class ContentCard extends StatelessWidget {
 class PredictionCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final String truncatedPrediction;
+  final String truncatedCure;
 
   const PredictionCard({
     super.key,
     required this.data,
     required this.truncatedPrediction,
+    required this.truncatedCure,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 12.0),
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-        color: Colors.white,
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.network(
-              data['image_url'], // Use 'image_url' here
-              height: 100,
-              width: 100,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              data['image_url'],
+              height: 200,
+              width: double.infinity,
               fit: BoxFit.cover,
             ),
-          ),
-          const SizedBox(width: 16.0),
-          Expanded(
-            child: Text(
+            const SizedBox(height: 8),
+            Text(
               truncatedPrediction,
-              style: const TextStyle(fontSize: 16.0),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              truncatedCure,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
       ),
     );
   }
