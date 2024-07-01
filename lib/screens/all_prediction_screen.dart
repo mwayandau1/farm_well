@@ -95,6 +95,8 @@ class _AllPredictionsScreenState extends State<AllPredictionsScreen> {
                             MaterialPageRoute(
                               builder: (context) => PredictionDetail(
                                 prediction: data['prediction'],
+                                cure: data[
+                                    'cure'], // Ensure this line is included
                                 imagePath: data['image_url'],
                               ),
                             ),

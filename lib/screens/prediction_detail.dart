@@ -1,14 +1,15 @@
-// prediction_detail.dart
 import 'package:flutter/material.dart';
 
 class PredictionDetail extends StatelessWidget {
   final String prediction;
   final String imagePath;
+  final String cure;
 
   const PredictionDetail({
     super.key,
     required this.prediction,
     required this.imagePath,
+    required this.cure,
   });
 
   @override
@@ -30,6 +31,13 @@ class PredictionDetail extends StatelessWidget {
               child: Text(
                 prediction,
                 style: const TextStyle(fontSize: 16.0),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                cure,
+                style: const TextStyle(fontSize: 16.0, color: Colors.green),
               ),
             ),
           ],
