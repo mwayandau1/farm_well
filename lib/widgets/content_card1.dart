@@ -2,31 +2,32 @@ import 'package:flutter/material.dart';
 
 class ContentCard extends StatelessWidget {
   final Map<String, dynamic> data;
-  final String truncatedContent;
 
-  const ContentCard({
-    super.key,
-    required this.data,
-    required this.truncatedContent,
-  });
+  const ContentCard({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+        color: Colors.white,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8.0),
-              topRight: Radius.circular(8.0),
-            ),
-            child: Image.network(
-              data['image'],
-              height: 150,
-              fit: BoxFit.cover,
-            ),
+          Image.network(
+            data['image'],
+            height: 200,
+            fit: BoxFit.cover,
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -37,13 +38,13 @@ class ContentCard extends StatelessWidget {
                   data['title'],
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
+                    fontSize: 18.0,
                   ),
                 ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 4.0),
                 Text(
-                  truncatedContent,
-                  style: const TextStyle(fontSize: 14.0),
+                  data['content'],
+                  style: const TextStyle(fontSize: 16.0),
                 ),
               ],
             ),
