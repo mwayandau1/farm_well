@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_well/screens/educational_content_detail.dart';
-import 'package:farm_well/widgets/content_card.dart';
+import 'package:farm_well/widgets/content_card1.dart';
 
 class AllEducationalContentScreen extends StatefulWidget {
   const AllEducationalContentScreen({super.key});
