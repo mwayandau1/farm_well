@@ -14,6 +14,18 @@ class PredictionDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Example error handling - use default values or show error messages as needed
+    if (prediction.isEmpty || imagePath.isEmpty || cure.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Prediction Detail"),
+        ),
+        body: const Center(
+          child: Text("Error: Missing prediction details"),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Prediction Detail"),
@@ -30,14 +42,20 @@ class PredictionDetail extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 prediction,
-                style: const TextStyle(fontSize: 16.0),
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  color: Color.fromARGB(255, 75, 74, 74),
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 cure,
-                style: const TextStyle(fontSize: 16.0, color: Colors.green),
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  color: Color.fromARGB(255, 20, 20, 20),
+                ),
               ),
             ),
           ],
