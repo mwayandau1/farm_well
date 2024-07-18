@@ -44,6 +44,7 @@ dependencies:
   provider: ^6.1.2
   firebase_storage: ^11.7.5
   http: ^1.2.1
+  flutter_native_splash: ^2.0.6
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +61,13 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+
+flutter_native_splash:
+  color: "#42a5f5" # Background color of the splash screen
+  image: images/splash.jpeg
+  android: true # Include Android
+  ios: true # Include iOS
+
 flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -71,8 +79,6 @@ flutter:
     - images/car.PNG
     - images/google.png
     - images/noData.png
-    - images/apple.png
-    - images/apple1.png
     - images/aifarm.jpg
     - images/plant_background.jpeg
     - images/profile_image.jpeg
@@ -82,6 +88,7 @@ flutter:
     - images/prediction2.jpeg
     - assets/trained_model.tflite
     - assets/labels.txt
+    - images/splash.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

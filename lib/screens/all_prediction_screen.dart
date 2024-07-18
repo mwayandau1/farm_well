@@ -102,7 +102,10 @@ class _AllPredictionsScreenState extends State<AllPredictionsScreen> {
                             ),
                           );
                         },
-                        child: PredictionCard(data: data),
+                        child: PredictionCard(
+                          data: data,
+                          truncatedContent: '',
+                        ),
                       );
                     },
                   );

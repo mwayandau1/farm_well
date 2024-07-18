@@ -6,7 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'package:farm_well/themes.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farm_well/widgets/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,11 +20,11 @@ void main() async {
     persistenceEnabled: true,
   );
 
-  runApp(const MyApp());
+  runApp(const MyAppWithSplashScreen());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyAppWithSplashScreen extends StatelessWidget {
+  const MyAppWithSplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +32,25 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Farm Well 😎',
       theme: greenThemeData,
-      home: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return const MainLayout();
-            } else {
-              return const LogIn();
-            }
-          }),
+      home: const SplashScreen(), // Set the splash screen as the home
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          return const MainLayout();
+        } else {
+          return const LogIn();
+        }
+      },
     );
   }
 }
