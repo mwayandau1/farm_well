@@ -9,6 +9,8 @@ import 'package:farm_well/themes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:farm_well/widgets/splash_screen.dart';
 
+import 'package:farm_well/screens/community.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -32,7 +34,15 @@ class MyAppWithSplashScreen extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Farm Well 😎',
       theme: greenThemeData,
-      home: const SplashScreen(), // Set the splash screen as the home
+      home: const SplashScreen(),
+      routes: {
+        // '/identify': (context) => IdentifyScreen(),
+        // '/diagnose': (context) => DiagnoseScreen(),
+        // '/book': (context) => BookScreen(),
+        // '/price-list': (context) => PriceListScreen(),
+        // '/guide': (context) => GuideScreen(),
+        '/community': (context) => const CommunityScreen(),
+      }, // Set the splash screen as the home
     );
   }
 }
