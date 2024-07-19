@@ -157,26 +157,6 @@ class WeatherDetail extends StatelessWidget {
           weather['weather'][0]['description'],
           style: const TextStyle(fontSize: 18),
         ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            const Text(
-              'Today would be a bad day for:',
-              style: TextStyle(fontSize: 18),
-            ),
-            const Spacer(),
-            Column(
-              children: [
-                const Icon(Icons.water_drop, size: 24),
-                Text('${weather['main']['humidity']}%'),
-              ],
-            ),
-          ],
-        ),
-        const Text(
-          'APPLYING PESTICIDES.',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
       ],
     );
   }

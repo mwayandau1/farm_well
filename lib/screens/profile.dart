@@ -1,28 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:farm_well/screens/login.dart'; // replace with your actual path
+import 'package:farm_well/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:farm_well/screens/account.dart';
+import 'package:farm_well/screens/settings.dart';
+import 'package:farm_well/screens/saved.dart';
+import 'package:farm_well/screens/help_center.dart';
+import 'package:farm_well/screens/about.dart';
+import 'package:farm_well/screens/history.dart';
+import 'dart:io';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ProfileScreen1 extends StatefulWidget {
+  const ProfileScreen1({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen1> createState() => _ProfileScreen1State();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreen1State extends State<ProfileScreen1> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   User? _user;
   String? _email;
   String? _location;
   String? _farmSize;
   String? _farmType;
-  bool _alertsUpdates = false;
-  bool _marketing = false;
-  bool _content = false;
-  bool _productUpdates = false;
+  final bool _alertsUpdates = false;
+  final bool _marketing = false;
+  final bool _content = false;
+  final bool _productUpdates = false;
+  String? _profilePicture;
+  String? _username;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -33,30 +46,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserData() async {
     if (_user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(_user!.uid).get();
-      if (userDoc.exists) {
-        Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
-        if (data != null) {
-          setState(() {
-            _email = _user!.email;
-            _location = data['location'] ?? '';
-            _farmSize = data['farm_size'] ?? '';
-            _farmType = data['farm_type'] ?? '';
-            _alertsUpdates = data['alerts_updates'] ?? false;
-            _marketing = data['marketing'] ?? false;
-            _content = data['content'] ?? false;
-            _productUpdates = data['product_updates'] ?? false;
-          });
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('User data is not available.'),
-          ));
+      try {
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(_user!.uid).get();
+        if (userDoc.exists) {
+          Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
+          if (data != null) {
+            setState(() {
+              _email = _user!.email;
+              _location = data['location'] ?? 'No location set';
+              _farmSize = data['farm_size'] ?? '';
+              _farmType = data['farm_type'] ?? '';
+              _profilePicture = data['profile_picture'] ?? '';
+              _username = data['username'] ?? 'No username set';
+              _isLoading = false;
+            });
+          }
         }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('User data not found.'),
-        ));
+      } catch (e) {
+        print('Error loading user data: $e');
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -68,12 +79,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       DocumentSnapshot userDoc = await userDocRef.get();
 
       try {
-        // If the document exists, update it with the new data
         if (userDoc.exists) {
           await userDocRef.update(data);
-        }
-        // If the document doesn't exist, create a new document with the data
-        else {
+        } else {
           await userDocRef.set(data);
         }
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -87,162 +95,181 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _changeProfilePicture() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      File file = File(image.path);
+      try {
+        String fileName = 'profile_pictures/${_user!.uid}.jpg';
+        UploadTask uploadTask = _storage.ref().child(fileName).putFile(file);
+        TaskSnapshot snapshot = await uploadTask;
+        String downloadUrl = await snapshot.ref.getDownloadURL();
+
+        await _updateUserData({'profile_picture': downloadUrl});
+
+        setState(() {
+          _profilePicture = downloadUrl;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Profile picture updated successfully.')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update profile picture.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              // Update the notification preference fields in Firestore
-              _updateUserData({
-                'alerts_updates': _alertsUpdates,
-                'marketing': _marketing,
-                'content': _content,
-                'product_updates': _productUpdates,
-              });
-            },
-            child: const Text(
-              'Done',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
         centerTitle: true,
       ),
-      body: ListView(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.email),
-            title: Text(_email ?? 'Email address'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // Show a dialog to edit the email address
-              _showEditDialog('Email address', _email ?? '', 'email');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.location_on),
-            title: Text(_location ?? 'Location'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // Show a dialog to edit the location
-              _showEditDialog('Location', _location ?? '', 'location');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.aspect_ratio),
-            title: Text(_farmSize ?? 'Farm size'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // Show a dialog to edit the farm size
-              _showEditDialog('Farm size', _farmSize ?? '', 'farm_size');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: Text(_farmType ?? 'Farm type'),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              // Show a dialog to edit the farm type
-              _showEditDialog('Farm type', _farmType ?? '', 'farm_type');
-            },
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text(
-              'Notifications',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0,
-              ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                Column(
+                  children: [
+                    GestureDetector(
+                      onTap: _changeProfilePicture,
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: _profilePicture != null &&
+                                    _profilePicture!.isNotEmpty
+                                ? NetworkImage(_profilePicture!)
+                                : const AssetImage('images/profile_image.jpeg')
+                                    as ImageProvider,
+                          ),
+                          Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _username ?? 'Username',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _location ?? 'Location',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                ListTile(
+                  leading: const Icon(Icons.account_circle),
+                  title: const Text('Account'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AccountScreen()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: const Text('History'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HistoryScreen()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.bookmark),
+                  title: const Text('Saved'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SavedScreen()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SettingsScreen()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.help),
+                  title: const Text('Help Center'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HelpCenterScreen()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.info),
+                  title: const Text('About'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AboutScreen()),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Log out'),
+                  onTap: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LogIn()),
+                    );
+                  },
+                ),
+              ],
             ),
-          ),
-          SwitchListTile(
-            title: const Text('Alerts & Updates'),
-            value: _alertsUpdates,
-            onChanged: (value) {
-              setState(() {
-                _alertsUpdates = value;
-              });
-            },
-          ),
-          SwitchListTile(
-            title: const Text('Marketing'),
-            value: _marketing,
-            onChanged: (value) {
-              setState(() {
-                _marketing = value;
-              });
-            },
-          ),
-          SwitchListTile(
-            title: const Text('Content'),
-            value: _content,
-            onChanged: (value) {
-              setState(() {
-                _content = value;
-              });
-            },
-          ),
-          SwitchListTile(
-            title: const Text('Product updates'),
-            value: _productUpdates,
-            onChanged: (value) {
-              setState(() {
-                _productUpdates = value;
-              });
-            },
-          ),
-          const SizedBox(height: 16.0),
-          Center(
-            child: ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LogIn()),
-                );
-              },
-              child: const Text('Sign out'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showEditDialog(String title, String initialValue, String fieldName) {
-    TextEditingController controller =
-        TextEditingController(text: initialValue);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Edit $title'),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(hintText: 'Enter $title'),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Update the corresponding field in Firestore
-                _updateUserData({fieldName: controller.text});
-                Navigator.of(context).pop();
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
