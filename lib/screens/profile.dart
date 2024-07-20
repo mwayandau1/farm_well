@@ -190,10 +190,13 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
                   title: const Text('Account'),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AccountScreen()),
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(25.0)),
+                      ),
+                      builder: (context) => const AccountScreen(),
                     );
                   },
                 ),
@@ -226,10 +229,13 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
                   title: const Text('Settings'),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SettingsScreen()),
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(25.0)),
+                      ),
+                      builder: (context) => const SettingsScreen(),
                     );
                   },
                 ),
