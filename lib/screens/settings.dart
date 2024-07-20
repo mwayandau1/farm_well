@@ -27,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadUserData() async {
     if (_user != null) {
       DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(_user!.uid).get();
+          await _firestore.collection('users').doc(_user.uid).get();
       if (userDoc.exists) {
         Map<String, dynamic>? data = userDoc.data() as Map<String, dynamic>?;
         if (data != null) {
@@ -44,7 +44,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _updateUserData() async {
     if (_user != null) {
       DocumentReference userDocRef =
-          _firestore.collection('users').doc(_user!.uid);
+          _firestore.collection('users').doc(_user.uid);
       Map<String, dynamic> data = {
         'location': _locationController.text,
         'farm_size': _farmSizeController.text,
@@ -59,33 +59,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _locationController,
-              decoration: const InputDecoration(labelText: 'Location'),
-            ),
-            TextField(
-              controller: _farmSizeController,
-              decoration: const InputDecoration(labelText: 'Farm Size'),
-            ),
-            TextField(
-              controller: _farmTypeController,
-              decoration: const InputDecoration(labelText: 'Farm Type'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateUserData,
-              child: const Text('Save Settings'),
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _locationController,
+            decoration: const InputDecoration(labelText: 'Location'),
+          ),
+          TextField(
+            controller: _farmSizeController,
+            decoration: const InputDecoration(labelText: 'Farm Size'),
+          ),
+          TextField(
+            controller: _farmTypeController,
+            decoration: const InputDecoration(labelText: 'Farm Type'),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _updateUserData,
+            child: const Text('Save Settings'),
+          ),
+        ],
       ),
     );
   }
