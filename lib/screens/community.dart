@@ -43,60 +43,25 @@ class _CommunityScreenState extends State<CommunityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Community',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Community',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {
+              // Add more actions if needed
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: TextField(
-              controller: questionController,
-              decoration: InputDecoration(
-                hintText: 'Ask a question...',
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide.none,
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.blue),
-                  onPressed: () async {
-                    if (questionController.text.isNotEmpty &&
-                        userData != null) {
-                      await messagesCollection.add({
-                        'question': questionController.text,
-                        'author': userData!['username'] ?? 'Anonymous',
-                        'responses': [],
-                        'likes': 0,
-                        'timestamp': FieldValue.serverTimestamp(),
-                      }).catchError((error) {
-                        print("Failed to add question: $error");
-                      });
-                      questionController.clear();
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: messagesCollection
@@ -118,207 +83,107 @@ class _CommunityScreenState extends State<CommunityScreen> {
                 final messages = snapshot.data!.docs;
 
                 return ListView.builder(
+                  reverse: true,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
-                    final tweet = Tweet(
-                      question: message['question'],
-                      author: message['author'],
-                      responses: (message['responses'] as List<dynamic>)
-                          .map((response) => Response.fromMap(response))
-                          .toList(),
-                      likes: message['likes'],
-                      timestamp: message['timestamp'] as Timestamp,
-                    );
-                    return buildTweetCard(tweet, message.id);
+                    final tweet = Tweet.fromFirestore(message);
+                    return buildChatBubble(tweet);
                   },
                 );
               },
             ),
           ),
+          _buildInputField(),
         ],
       ),
     );
   }
 
-  Widget buildTweetCard(Tweet tweet, String docId) {
-    final commentController = TextEditingController();
-
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      'https://api.adorable.io/avatars/50/${tweet.author}.png'),
-                ),
-                const SizedBox(width: 12.0),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tweet.author,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0,
-                        ),
-                      ),
-                      Text(
-                        '@${tweet.author.toLowerCase()}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14.0,
-                        ),
-                      ),
-                      const SizedBox(height: 4.0),
-                      Text(
-                        DateFormat.yMMMd()
-                            .add_jm()
-                            .format(tweet.timestamp.toDate()),
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12.0),
-            Text(
-              tweet.question,
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.favorite,
-                      color: tweet.likes > 0 ? Colors.red : Colors.grey),
-                  onPressed: () {
-                    // Implement like functionality
-                  },
-                ),
-                Text('${tweet.likes}'),
-                const SizedBox(width: 16.0),
-                IconButton(
-                  icon: const Icon(Icons.comment, color: Colors.blue),
-                  onPressed: () {
-                    // Implement comment functionality
-                  },
-                ),
-                Text('${tweet.responses.length}'),
-              ],
-            ),
-            const Divider(),
-            ...tweet.responses.map((response) => buildResponseWidget(response)),
-            const SizedBox(height: 8.0),
-            TextField(
-              controller: commentController,
+  Widget _buildInputField() {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey[200]!)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: questionController,
               decoration: InputDecoration(
-                hintText: 'Write a response...',
+                hintText: 'Message..',
                 hintStyle: TextStyle(color: Colors.grey[400]),
                 filled: true,
                 fillColor: Colors.grey[100],
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
+                  borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none,
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.blue),
-                  onPressed: () async {
-                    if (commentController.text.isNotEmpty && userData != null) {
-                      final response = Response(
-                        text: commentController.text,
-                        author: userData!['username'] ?? 'Anonymous',
-                        timestamp: Timestamp.now(),
-                      );
-                      tweet.responses.add(response);
-
-                      await messagesCollection.doc(docId).update({
-                        'responses': FieldValue.arrayUnion([response.toMap()]),
-                      }).catchError((error) {
-                        print("Failed to add response: $error");
-                      });
-
-                      commentController.clear();
-                      setState(() {});
-                    }
-                  },
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.send, color: Colors.blue),
+            onPressed: () async {
+              if (questionController.text.isNotEmpty && userData != null) {
+                await messagesCollection.add({
+                  'question': questionController.text,
+                  'author': userData!['username'] ?? 'Anonymous',
+                  'timestamp': FieldValue.serverTimestamp(),
+                }).catchError((error) {
+                  print("Failed to add question: $error");
+                });
+                questionController.clear();
+              }
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget buildResponseWidget(Response response) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8.0),
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(
-                'https://api.adorable.io/avatars/40/${response.author}.png'),
-            radius: 16,
+  Widget buildChatBubble(Tweet tweet) {
+    final bool isCurrentUser = tweet.author == (userData?['username'] ?? '');
+    final bubbleColor =
+        isCurrentUser ? Colors.blue.shade100 : Colors.grey.shade200;
+    final textColor = isCurrentUser ? Colors.blue.shade800 : Colors.black87;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Align(
+        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.75),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: bubbleColor,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                offset: const Offset(0, 3),
+                blurRadius: 5,
+                color: Colors.black.withOpacity(0.1),
+              ),
+            ],
           ),
-          const SizedBox(width: 8.0),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      response.author,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.0,
-                      ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Text(
-                      DateFormat.jm().format(response.timestamp.toDate()),
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12.0,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4.0),
-                Text(
-                  response.text,
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                tweet.question,
+                style: TextStyle(fontSize: 16, color: textColor),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                DateFormat.yMMMd().add_jm().format(tweet.timestamp.toDate()),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -327,39 +192,21 @@ class _CommunityScreenState extends State<CommunityScreen> {
 class Tweet {
   final String question;
   final String author;
-  final List<Response> responses;
-  int likes;
   final Timestamp timestamp;
 
   Tweet({
     required this.question,
     required this.author,
-    required this.responses,
-    this.likes = 0,
     required this.timestamp,
   });
-}
 
-class Response {
-  final String text;
-  final String author;
-  final Timestamp timestamp;
+  factory Tweet.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
 
-  Response({required this.text, required this.author, required this.timestamp});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'text': text,
-      'author': author,
-      'timestamp': timestamp,
-    };
-  }
-
-  factory Response.fromMap(Map<String, dynamic> map) {
-    return Response(
-      text: map['text'],
-      author: map['author'],
-      timestamp: map['timestamp'] as Timestamp,
+    return Tweet(
+      question: data['question'] ?? '',
+      author: data['author'] ?? 'Anonymous',
+      timestamp: data['timestamp'] ?? Timestamp.now(),
     );
   }
 }
