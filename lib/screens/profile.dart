@@ -9,7 +9,6 @@ import 'package:farm_well/screens/settings.dart';
 import 'package:farm_well/screens/saved.dart';
 import 'package:farm_well/screens/help_center.dart';
 import 'package:farm_well/screens/about.dart';
-import 'package:farm_well/screens/history.dart';
 import 'dart:io';
 
 class ProfileScreen1 extends StatefulWidget {
@@ -29,10 +28,6 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
   String? _location;
   String? _farmSize;
   String? _farmType;
-  final bool _alertsUpdates = false;
-  final bool _marketing = false;
-  final bool _content = false;
-  final bool _productUpdates = false;
   String? _profilePicture;
   String? _username;
   bool _isLoading = true;
@@ -72,29 +67,6 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
     }
   }
 
-  Future<void> _updateUserData(Map<String, dynamic> data) async {
-    if (_user != null) {
-      DocumentReference userDocRef =
-          _firestore.collection('users').doc(_user!.uid);
-      DocumentSnapshot userDoc = await userDocRef.get();
-
-      try {
-        if (userDoc.exists) {
-          await userDocRef.update(data);
-        } else {
-          await userDocRef.set(data);
-        }
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('User data updated successfully.'),
-        ));
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Failed to update user data.'),
-        ));
-      }
-    }
-  }
-
   Future<void> _changeProfilePicture() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -107,20 +79,32 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
         TaskSnapshot snapshot = await uploadTask;
         String downloadUrl = await snapshot.ref.getDownloadURL();
 
-        await _updateUserData({'profile_picture': downloadUrl});
+        await _firestore
+            .collection('users')
+            .doc(_user!.uid)
+            .update({'profile_picture': downloadUrl});
 
         setState(() {
           _profilePicture = downloadUrl;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Profile picture updated successfully.')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile picture updated successfully.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update profile picture.')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to update profile picture.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
@@ -128,154 +112,143 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        centerTitle: true,
-      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                Column(
-                  children: [
-                    GestureDetector(
-                      onTap: _changeProfilePicture,
-                      child: Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: _profilePicture != null &&
+          : CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 200.0,
+                  floating: false,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    title: Text(_username ?? 'Username',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                        )),
+                    background: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        GestureDetector(
+                          onTap: _changeProfilePicture,
+                          child: Image(
+                            image: _profilePicture != null &&
                                     _profilePicture!.isNotEmpty
                                 ? NetworkImage(_profilePicture!)
                                 : const AssetImage('images/profile_image.jpeg')
                                     as ImageProvider,
+                            fit: BoxFit.cover,
                           ),
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Colors.blue,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 20,
+                        ),
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.7)
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _username ?? 'Username',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _location ?? 'Location',
+                          style:
+                              TextStyle(fontSize: 18, color: Colors.grey[600]),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildProfileOption(
+                          icon: Icons.account_circle,
+                          title: 'Account',
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const AccountScreen())),
+                        ),
+                        _buildProfileOption(
+                          icon: Icons.bookmark,
+                          title: 'Saved',
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SavedScreen())),
+                        ),
+                        _buildProfileOption(
+                          icon: Icons.settings,
+                          title: 'Settings',
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const SettingsScreen())),
+                        ),
+                        _buildProfileOption(
+                          icon: Icons.help,
+                          title: 'Help Center',
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const HelpCenterScreen())),
+                        ),
+                        _buildProfileOption(
+                          icon: Icons.info,
+                          title: 'About',
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const AboutScreen())),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LogIn()));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red,
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text('Log out'),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _location ?? 'Location',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                ListTile(
-                  leading: const Icon(Icons.account_circle),
-                  title: const Text('Account'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(25.0)),
-                      ),
-                      builder: (context) => const AccountScreen(),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.history),
-                  title: const Text('History'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HistoryScreen()),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.bookmark),
-                  title: const Text('Saved'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SavedScreen()),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(25.0)),
-                      ),
-                      builder: (context) => const SettingsScreen(),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.help),
-                  title: const Text('Help Center'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HelpCenterScreen()),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.info),
-                  title: const Text('About'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AboutScreen()),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.logout),
-                  title: const Text('Log out'),
-                  onTap: () async {
-                    await FirebaseAuth.instance.signOut();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LogIn()),
-                    );
-                  },
+                  ),
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _buildProfileOption(
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.blue),
+      title: Text(title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: onTap,
     );
   }
 }
