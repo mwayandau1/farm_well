@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PredictionCard extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -19,6 +21,7 @@ class _PredictionCardState extends State<PredictionCard>
   late AnimationController _controller;
   late Animation<double> _opacityAnimation;
   late Animation<Offset> _slideAnimation;
+  bool isBookmarked = false;
 
   @override
   void initState() {
@@ -33,6 +36,43 @@ class _PredictionCardState extends State<PredictionCard>
             begin: const Offset(0, 0.5), end: Offset.zero)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
+    _checkIfBookmarked();
+  }
+
+  Future<void> _checkIfBookmarked() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('bookmarks')
+          .doc(user.uid)
+          .collection('predictions')
+          .doc(widget.data['id'])
+          .get();
+      setState(() {
+        isBookmarked = doc.exists;
+      });
+    }
+  }
+
+  Future<void> _toggleBookmark() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final bookmarkRef = FirebaseFirestore.instance
+          .collection('bookmarks')
+          .doc(user.uid)
+          .collection('predictions')
+          .doc(widget.data['id']);
+
+      if (isBookmarked) {
+        await bookmarkRef.delete();
+      } else {
+        await bookmarkRef.set(widget.data);
+      }
+
+      setState(() {
+        isBookmarked = !isBookmarked;
+      });
+    }
   }
 
   @override
@@ -86,6 +126,13 @@ class _PredictionCardState extends State<PredictionCard>
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
+              ),
+              IconButton(
+                icon: Icon(
+                  isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  color: isBookmarked ? Colors.blue : Colors.grey,
+                ),
+                onPressed: _toggleBookmark,
               ),
             ],
           ),

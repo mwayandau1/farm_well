@@ -1,3 +1,4 @@
+import 'package:farm_well/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -99,23 +100,23 @@ class _AccountScreenState extends State<AccountScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {
-                // Add functionality to edit profile
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const LogIn()));
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
-              child: const Text(
-                'Edit Profile',
-                style: TextStyle(fontSize: 18),
-              ),
+              child: const Text('Log out'),
             ),
           ],
         ),

@@ -40,6 +40,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
       setState(() {
         _imageFile = File(pickedFile.path);
         _predictionResult = null; // Reset the prediction result
+        _diseaseLabel = null; // Reset the disease label
       });
     }
   }
@@ -121,6 +122,14 @@ class _PredictionScreenState extends State<PredictionScreen> {
         return Cure(disease);
       },
     );
+  }
+
+  void _resetPrediction() {
+    setState(() {
+      _imageFile = null;
+      _predictionResult = null;
+      _diseaseLabel = null;
+    });
   }
 
   @override
@@ -261,6 +270,19 @@ class _PredictionScreenState extends State<PredictionScreen> {
                                         ),
                                       ),
                                       child: const Text('Show Cure'),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ElevatedButton(
+                                      onPressed: _resetPrediction,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      child: const Text('Predict Again'),
                                     ),
                                   ],
                                 ),

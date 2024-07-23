@@ -14,14 +14,17 @@ class PredictionDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Example error handling - use default values or show error messages as needed
     if (prediction.isEmpty || imagePath.isEmpty || cure.isEmpty) {
       return Scaffold(
         appBar: AppBar(
           title: const Text("Prediction Detail"),
+          backgroundColor: Colors.red,
         ),
         body: const Center(
-          child: Text("Error: Missing prediction details"),
+          child: Text(
+            "Error: Missing prediction details",
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
         ),
       );
     }
@@ -29,32 +32,92 @@ class PredictionDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Prediction Detail"),
+        backgroundColor: Colors.green,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Image.network(imagePath, height: 250, fit: BoxFit.cover),
+            Container(
+              height: 250,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(child: Text('Failed to load image'));
+                },
+              ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                prediction,
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  color: Color.fromARGB(255, 75, 74, 74),
+            const SizedBox(height: 20),
+            Card(
+              margin: const EdgeInsets.all(16),
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Prediction:",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      prediction,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                cure,
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  color: Color.fromARGB(255, 20, 20, 20),
+            Card(
+              margin: const EdgeInsets.all(16),
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Cure:",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      cure,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
