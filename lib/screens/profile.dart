@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:farm_well/screens/account.dart';
 import 'package:farm_well/screens/settings.dart';
-import 'package:farm_well/screens/saved.dart';
+import 'package:farm_well/screens/bookmarks.dart';
 import 'package:farm_well/screens/help_center.dart';
 import 'package:farm_well/screens/about.dart';
 import 'dart:io';
@@ -179,11 +179,12 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
                         ),
                         _buildProfileOption(
                           icon: Icons.bookmark,
-                          title: 'Saved',
+                          title: 'Bookmarks',
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const SavedScreen())),
+                                  builder: (context) =>
+                                      const BookmarksScreen())),
                         ),
                         _buildProfileOption(
                           icon: Icons.settings,
@@ -210,25 +211,6 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const AboutScreen())),
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await FirebaseAuth.instance.signOut();
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LogIn()));
-                          },
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.red,
-                            minimumSize: const Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('Log out'),
                         ),
                       ],
                     ),
