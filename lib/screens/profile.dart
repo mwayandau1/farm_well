@@ -112,6 +112,7 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightGreen[100],
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : CustomScrollView(
@@ -226,7 +227,7 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
       required String title,
       required VoidCallback onTap}) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
+      leading: Icon(icon, color: Colors.green),
       title: Text(title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),

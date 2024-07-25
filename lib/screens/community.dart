@@ -49,7 +49,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.lightGreen[100],
         foregroundColor: Colors.black,
         actions: [
           IconButton(
