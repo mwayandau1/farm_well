@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _emailController.text = _user.email ?? '';
             _locationController.text = data['location'] ?? '';
             _farmSizeController.text = data['farm_size'] ?? '';
-            _farmTypeController.text = data['farm_type'] ?? '';
+            _farmTypeController.text = data['crop_types'] ?? '';
             _profilePicture = data['profile_picture'] ?? '';
           });
         }
@@ -57,7 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'email': _emailController.text,
         'location': _locationController.text,
         'farm_size': _farmSizeController.text,
-        'farm_type': _farmTypeController.text,
+        'crop_types': _farmTypeController.text,
         'profile_picture': _profilePicture,
       };
       await userDocRef.update(data);
@@ -142,7 +142,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       height: 120,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.blue, width: 3),
+                        border: Border.all(color: Colors.green, width: 3),
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: _profilePicture != null &&
@@ -156,7 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: Colors.green,
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                       ),
@@ -174,12 +174,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildTextField(
                   _locationController, 'Location', Icons.location_on),
               _buildTextField(_farmSizeController, 'Farm Size', Icons.crop),
-              _buildTextField(_farmTypeController, 'Farm Type', Icons.eco),
+              _buildTextField(_farmTypeController, 'Crop Types', Icons.eco),
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _updateUserData,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -210,7 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, color: Colors.blue),
+          prefixIcon: Icon(icon, color: Colors.green),
           border: InputBorder.none,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

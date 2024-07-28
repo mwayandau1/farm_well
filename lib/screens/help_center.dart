@@ -106,6 +106,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _sendEmail,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                ),
                 child: const Text('Send Email'),
               ),
             ],

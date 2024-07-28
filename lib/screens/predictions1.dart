@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -21,15 +22,54 @@ class _PredictionScreenState extends State<PredictionScreen> {
   String? _diseaseLabel;
   bool _isPredicting = false;
 
+  String url = "https://plant-disease-classifcation-api.onrender.com/predict";
+  // String url = "https://192.168.32.136/predict";
+
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
+    final pickedFile = await ImagePicker().pickImage(
+      source: source,
+      preferredCameraDevice: CameraDevice.rear, // Always use rear camera
+    );
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-        _predictionResult = null; // Reset the prediction result
-        _diseaseLabel = null; // Reset the disease label
-      });
+      File? croppedFile = await _cropImage(pickedFile.path);
+      if (croppedFile != null) {
+        setState(() {
+          _imageFile = croppedFile;
+          _predictionResult = null; // Reset the prediction result
+          _diseaseLabel = null; // Reset the disease label
+        });
+      }
     }
+  }
+
+  Future<File?> _cropImage(String imagePath) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: imagePath,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Colors.green,
+          toolbarWidgetColor: Colors.white,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPresetCustom(),
+          ],
+        ),
+        IOSUiSettings(
+          title: 'Crop Image',
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPresetCustom(),
+          ],
+        ),
+        WebUiSettings(
+          context: context,
+        ),
+      ],
+    );
+    return croppedFile != null ? File(croppedFile.path) : null;
   }
 
   Future<void> _predictDisease() async {
@@ -45,10 +85,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
         String imageUrl = await uploadImageToFirebase(_imageFile!);
 
         if (imageUrl.isNotEmpty) {
-          var request = http.MultipartRequest(
-              'POST',
-              Uri.parse(
-                  'https://plant-disease-classifcation-api.onrender.com/predict'));
+          var request = http.MultipartRequest('POST', Uri.parse(url));
           request.files
               .add(await http.MultipartFile.fromPath('file', _imageFile!.path));
           var response = await request.send();
@@ -223,7 +260,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
                         ElevatedButton(
                           onPressed: _predictDisease,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
@@ -308,4 +345,12 @@ extension StringExtensions on String {
             : word)
         .join(' ');
   }
+}
+
+class CropAspectRatioPresetCustom implements CropAspectRatioPresetData {
+  @override
+  (int, int)? get data => (2, 3);
+
+  @override
+  String get name => '2x3 (customized)';
 }

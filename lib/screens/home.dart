@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
               // Card with various options
-              const OptionsCard(),
+              const CropCard(),
               const SizedBox(height: 16),
               // Educational content section
               const Text(
