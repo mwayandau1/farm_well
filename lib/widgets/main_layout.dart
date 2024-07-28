@@ -1,7 +1,7 @@
 import 'package:farm_well/screens/predictions1.dart';
 // import 'package:farm_well/screens/profile.dart';
 // import 'package:farm_well/screens/home.dart';
-import 'package:farm_well/screens/community.dart';
+import 'package:farm_well/screens/chat_room.dart';
 import 'package:flutter/material.dart';
 import 'package:farm_well/screens/profile.dart';
 import 'package:farm_well/screens/home.dart';
@@ -52,7 +52,7 @@ class _MainLayoutState extends State<MainLayout> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
-            label: 'Community',
+            label: 'Chat Room',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
