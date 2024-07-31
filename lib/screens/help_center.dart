@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HelpCenterScreen extends StatefulWidget {
   const HelpCenterScreen({super.key});
@@ -17,23 +17,21 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
 
   Future<void> _sendEmail() async {
     if (_formKey.currentState!.validate()) {
-      final Email email = Email(
-        body: 'Name: ${_nameController.text}\n'
-            'Email: ${_emailController.text}\n\n'
-            '${_messageController.text}',
-        subject: _subjectController.text,
-        recipients: ['mosesayandau1@gmail.com'],
-        isHTML: false,
+      final Uri params = Uri(
+        scheme: 'mailto',
+        path: 'support@example.com',
+        query: 'subject=${Uri.encodeComponent(_subjectController.text)}'
+            '&body=${Uri.encodeComponent('Name: ${_nameController.text}\n'
+                'Email: ${_emailController.text}\n\n'
+                '${_messageController.text}')}',
       );
 
-      try {
-        await FlutterEmailSender.send(email);
+      var url = params.toString();
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email sent successfully')),
-        );
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending email: $error')),
+          const SnackBar(content: Text('Could not launch email client')),
         );
       }
     }

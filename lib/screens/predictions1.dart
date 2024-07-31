@@ -22,8 +22,8 @@ class _PredictionScreenState extends State<PredictionScreen> {
   String? _diseaseLabel;
   bool _isPredicting = false;
 
-  // String url = "https://plant-disease-classifcation-api.onrender.com/predict";
-  String url = "http://192.168.144.114:5000/predict";
+  String url = "https://plant-disease-classifcation-api.onrender.com/predict";
+  // String url = "https://192.168.32.136/predict";
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(
