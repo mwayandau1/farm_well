@@ -19,6 +19,7 @@ class _AccountScreenState extends State<AccountScreen> {
   String? _username;
   String? _phone;
   String? _farmType;
+  String? _profilePicture;
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _AccountScreenState extends State<AccountScreen> {
             _username = data['username'] ?? 'No username set';
             _phone = data['phone'] ?? 'No phone set';
             _farmType = data['farm_type'] ?? 'No farm type set';
+            _profilePicture = data['profile_picture'] ?? '';
           });
         }
       }
@@ -70,10 +72,14 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 50,
                       backgroundImage:
-                          AssetImage('assets/images/default_profile.png'),
+                          _profilePicture != null && _profilePicture!.isNotEmpty
+                              ? NetworkImage(_profilePicture!)
+                              : const AssetImage(
+                                      'assets/images/default_profile.png')
+                                  as ImageProvider,
                     ),
                     const SizedBox(height: 10),
                     Text(

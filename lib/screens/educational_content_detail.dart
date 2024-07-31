@@ -69,7 +69,6 @@ class EducationalContentDetail extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 28.0,
-                        color: Colors.indigo,
                       ),
                     ),
                     const SizedBox(height: 16.0),
