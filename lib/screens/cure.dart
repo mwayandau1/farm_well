@@ -349,23 +349,39 @@ class Cure extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plant Disease Recognition'),
+        title: const Text('Possible Cure'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0), // Increased padding
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const Text(
-              "Cure : ",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              "Cure:",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.green, // Added text color
+              ),
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: Text(
-                disease[diseaseName] ??
-                    'No cure information available for this disease.',
-                style: const TextStyle(fontSize: 14),
+              child: Container(
+                padding: const EdgeInsets.all(
+                    12.0), // Added padding inside the container
+                decoration: BoxDecoration(
+                  color: Colors.white, // Background color
+                  borderRadius: BorderRadius.circular(10), // Rounded corners
+                ),
+                child: SingleChildScrollView(
+                  child: Text(
+                    disease[diseaseName] ??
+                        'No cure information available for this disease.',
+                    style: const TextStyle(
+                        fontSize: 16,
+                        height: 1.5), // Increased font size and line height
+                  ),
+                ),
               ),
             ),
           ],
