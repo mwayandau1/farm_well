@@ -61,48 +61,46 @@ class _CropCardState extends State<CropCard> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CarouselSlider(
-            items: _buildCrops(),
-            options: CarouselOptions(
-              height: 140, // Adjusted height to ensure enough space
-              viewportFraction: 0.3,
-              enlargeCenterPage: true,
-              autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 3),
-              onPageChanged: (index, reason) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CarouselSlider(
+          items: _buildCrops(),
+          options: CarouselOptions(
+            height: 120,
+            viewportFraction: 0.3,
+            enlargeCenterPage: true,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 3),
+            onPageChanged: (index, reason) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
           ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: crops.asMap().entries.map((entry) {
-              return GestureDetector(
-                onTap: () => _navigateTo(
-                    context, '/${entry.value['name']!.toLowerCase()}'),
-                child: Container(
-                  width: 6.0,
-                  height: 6.0,
-                  margin: const EdgeInsets.symmetric(horizontal: 2.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentIndex == entry.key
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey.withOpacity(0.5),
-                  ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: crops.asMap().entries.map((entry) {
+            return GestureDetector(
+              onTap: () => _navigateTo(
+                  context, '/${entry.value['name']!.toLowerCase()}'),
+              child: Container(
+                width: 6.0,
+                height: 6.0,
+                margin: const EdgeInsets.symmetric(horizontal: 2.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentIndex == entry.key
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey.withOpacity(0.5),
                 ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

@@ -90,10 +90,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _profilePicture = downloadUrl;
         });
 
-        await _firestore.collection('users').doc(_user.uid).update({
-          'profile_picture': _profilePicture,
-        });
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Profile picture updated successfully.'),
