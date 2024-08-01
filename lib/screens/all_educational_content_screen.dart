@@ -32,6 +32,14 @@ class _AllEducationalContentScreenState
     super.dispose();
   }
 
+  String truncateText(String text, int maxWords) {
+    List<String> words = text.split(' ');
+    if (words.length <= maxWords) {
+      return text;
+    }
+    return '${words.take(maxWords).join(' ')}...';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,6 +97,8 @@ class _AllEducationalContentScreenState
                     itemBuilder: (context, index) {
                       Map<String, dynamic> data =
                           documents[index].data() as Map<String, dynamic>;
+                      String truncatedContent =
+                          truncateText(data['content'], 50);
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -102,7 +112,12 @@ class _AllEducationalContentScreenState
                             ),
                           );
                         },
-                        child: ContentCard(data: data),
+                        child: ContentCard(
+                          data: {
+                            ...data,
+                            'content': truncatedContent,
+                          },
+                        ),
                       );
                     },
                   );
