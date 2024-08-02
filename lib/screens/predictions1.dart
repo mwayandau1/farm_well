@@ -21,22 +21,23 @@ class _PredictionScreenState extends State<PredictionScreen> {
   bool _isLoading = false;
   String? _diseaseLabel;
   bool _isPredicting = false;
+  bool _hasPrediction = false;
 
-  // String url = "https://plant-disease-classifcation-api.onrender.com/predict";
-  String url = "http://10.10.74.223:5000/predict";
+  String url = "http://10.42.0.1:5000/predict";
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(
       source: source,
-      preferredCameraDevice: CameraDevice.rear, // Always use rear camera
+      preferredCameraDevice: CameraDevice.rear,
     );
     if (pickedFile != null) {
       File? croppedFile = await _cropImage(pickedFile.path);
       if (croppedFile != null) {
         setState(() {
           _imageFile = croppedFile;
-          _predictionResult = null; // Reset the prediction result
-          _diseaseLabel = null; // Reset the disease label
+          _predictionResult = null;
+          _diseaseLabel = null;
+          _hasPrediction = false;
         });
       }
     }
@@ -73,10 +74,10 @@ class _PredictionScreenState extends State<PredictionScreen> {
   }
 
   Future<void> _predictDisease() async {
-    if (_isPredicting) return; // Prevent multiple simultaneous predictions
+    if (_isPredicting) return;
 
     setState(() {
-      _isLoading = true; // Show loading indicator
+      _isLoading = true;
       _isPredicting = true;
     });
 
@@ -102,10 +103,8 @@ class _PredictionScreenState extends State<PredictionScreen> {
               final prediction =
                   'Predicted Disease: ${formatLabel(label)}\nConfidence: ${(confidence * 100).toStringAsFixed(2)}%';
 
-              // Get the cure for the predicted disease
               final cureText = Cure.getDiseaseCure(label);
 
-              // Store prediction result and cure in Firestore
               await FirebaseFirestore.instance.collection('predictions').add({
                 'image_url': imageUrl,
                 'prediction': prediction,
@@ -114,8 +113,9 @@ class _PredictionScreenState extends State<PredictionScreen> {
               });
 
               setState(() {
-                _predictionResult = prediction; // Set the prediction result
-                _diseaseLabel = label; // Set the disease label
+                _predictionResult = prediction;
+                _diseaseLabel = label;
+                _hasPrediction = true;
               });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -143,7 +143,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
       );
     } finally {
       setState(() {
-        _isLoading = false; // Hide loading indicator
+        _isLoading = false;
         _isPredicting = false;
       });
     }
@@ -171,6 +171,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
       _imageFile = null;
       _predictionResult = null;
       _diseaseLabel = null;
+      _hasPrediction = false;
     });
   }
 
@@ -257,23 +258,24 @@ class _PredictionScreenState extends State<PredictionScreen> {
                     Column(
                       children: [
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: _predictDisease,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                        if (!_hasPrediction)
+                          ElevatedButton(
+                            onPressed: _predictDisease,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                             ),
+                            child: const Text('Predict'),
                           ),
-                          child: const Text('Predict'),
-                        ),
                         if (_isLoading)
                           const Padding(
                             padding: EdgeInsets.all(16.0),
                             child: CircularProgressIndicator(),
                           ),
-                        if (_predictionResult != null)
+                        if (_predictionResult != null && _hasPrediction)
                           Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Card(
