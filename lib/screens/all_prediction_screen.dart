@@ -88,15 +88,19 @@ class _AllPredictionsScreenState extends State<AllPredictionsScreen> {
                     itemBuilder: (context, index) {
                       Map<String, dynamic> data =
                           documents[index].data() as Map<String, dynamic>;
+                      String predictionId =
+                          documents[index].id; // Get the document ID
+
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => PredictionDetail(
+                                predictionId:
+                                    predictionId, // Pass the document ID
                                 prediction: data['prediction'],
-                                cure: data[
-                                    'cure'], // Ensure this line is included
+                                cure: data['cure'],
                                 imagePath: data['image_url'],
                               ),
                             ),
