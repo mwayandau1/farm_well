@@ -51,10 +51,12 @@ class _ContentCardState extends State<ContentCard>
                 topLeft: Radius.circular(8.0),
                 topRight: Radius.circular(8.0),
               ),
-              child: Image.network(
-                widget.data['image'],
-                height: 150,
-                fit: BoxFit.cover,
+              child: SizedBox(
+                height: 150, // Fixed height for the image
+                child: Image.network(
+                  widget.data['image'],
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
@@ -63,16 +65,18 @@ class _ContentCardState extends State<ContentCard>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.data['title'],
+                    widget.data['title'] ?? 'No Title',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16.0,
                     ),
+                    overflow: TextOverflow.ellipsis, // Handle title overflow
                   ),
                   const SizedBox(height: 8.0),
                   Text(
                     widget.truncatedContent,
                     style: const TextStyle(fontSize: 14.0),
+                    overflow: TextOverflow.ellipsis, // Handle content overflow
                   ),
                 ],
               ),

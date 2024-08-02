@@ -81,6 +81,8 @@ class PredictionResultsSection extends StatelessWidget {
                       documents[index].data() as Map<String, dynamic>;
                   String truncatedContent =
                       truncateText(data['result'] ?? '', 20);
+                  String predictionId =
+                      documents[index].id; // Get the document ID
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
@@ -90,6 +92,8 @@ class PredictionResultsSection extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) => PredictionDetail(
+                              predictionId:
+                                  predictionId, // Pass the document ID
                               prediction: data['prediction'] ?? '',
                               cure: data['cure'] ?? '',
                               imagePath: data['image_url'] ?? '',

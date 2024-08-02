@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PredictionDetail extends StatelessWidget {
+  final String predictionId;
   final String prediction;
   final String imagePath;
   final String cure;
 
   const PredictionDetail({
     super.key,
+    required this.predictionId,
     required this.prediction,
     required this.imagePath,
     required this.cure,
   });
+
+  Future<void> _deletePrediction(BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('predictions')
+          .doc(predictionId)
+          .delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Prediction deleted successfully')),
+      );
+
+      Navigator.of(context).pop(); // Go back after deletion
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete prediction: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +55,12 @@ class PredictionDetail extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Prediction Detail"),
         backgroundColor: Colors.green,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _deletePrediction(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
