@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Home"),
+        title: const Text("Farmwell"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
