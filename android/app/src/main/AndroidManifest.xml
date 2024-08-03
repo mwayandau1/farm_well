@@ -8,7 +8,7 @@
   </queries>
 
     <application
-        android:label="farm_well"
+        android:label="Farmwell"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
