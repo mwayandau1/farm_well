@@ -24,7 +24,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
   bool _hasPrediction = false;
 
   // String url = "https://192.168.32.136/predict";
-  String url = "http://10.42.0.1:5000/predict";
+  String url = "http://10.40.32.155:5000/predict";
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(
