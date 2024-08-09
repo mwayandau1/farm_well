@@ -23,8 +23,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
   bool _isPredicting = false;
   bool _hasPrediction = false;
 
-  // String url = "https://192.168.32.136/predict";
-  String url = "http://10.40.32.155:5000/predict";
+  String url = "http://10.42.0.1:5000/predict";
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(
@@ -161,8 +160,17 @@ class _PredictionScreenState extends State<PredictionScreen> {
   void _showCureModal(String disease) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext context) {
-        return Cure(disease);
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Cure(disease, scrollController: scrollController);
+          },
+        );
       },
     );
   }

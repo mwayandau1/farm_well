@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Cure extends StatelessWidget {
+  final ScrollController? scrollController;
+
   final String diseaseName;
-  const Cure(this.diseaseName, {super.key});
+  const Cure(this.diseaseName, {super.key, required this.scrollController});
 
   static final Map<String, String> disease = {
     "Orange___Haunglongbing___(Citrus_greening)":
@@ -352,20 +354,23 @@ class Cure extends StatelessWidget {
         title: const Text('Plant Disease Recognition'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const Text(
-              "Cure : ",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              "Cure:",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             Expanded(
-              child: Text(
-                disease[diseaseName] ??
-                    'No cure information available for this disease.',
-                style: const TextStyle(fontSize: 14),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Text(
+                  disease[diseaseName] ??
+                      'No cure information available for this disease.',
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
             ),
           ],
