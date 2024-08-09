@@ -67,8 +67,6 @@ flutter:
     - images/citrus_greening.jpeg
     - images/prediction1.jpeg
     - images/prediction2.jpeg
-    - assets/trained_30_float32.tflite
-    - assets/labels.txt
     - images/splash.jpeg
     - images/potato.jpeg
     - images/orange.jpeg
