@@ -39,16 +39,18 @@ class _CropCardState extends State<CropCard> {
             borderRadius: BorderRadius.circular(10.0),
             child: Image.asset(
               imageUrl,
-              height: 80,
-              width: 80,
+              height: 75,
+              width: 75,
               fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             name,
-            style: const TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 11),
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
         ],
       ),
@@ -67,7 +69,7 @@ class _CropCardState extends State<CropCard> {
         CarouselSlider(
           items: _buildCrops(),
           options: CarouselOptions(
-            height: 120,
+            height: 140, // Increased from 120
             viewportFraction: 0.3,
             enlargeCenterPage: true,
             autoPlay: true,
