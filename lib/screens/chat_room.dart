@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -16,6 +19,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
   final TextEditingController questionController = TextEditingController();
   User? currentUser;
   Map<String, dynamic>? userData;
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -36,6 +40,49 @@ class _CommunityScreenState extends State<CommunityScreen> {
           userData = userDoc.data() as Map<String, dynamic>;
         });
       }
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<String> _uploadImage(File image) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef
+        .child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await imageRef.putFile(image);
+    return await imageRef.getDownloadURL();
+  }
+
+  Future<void> _sendMessage() async {
+    if ((questionController.text.isNotEmpty || _selectedImage != null) &&
+        userData != null) {
+      final message = {
+        'question': questionController.text,
+        'author': userData!['username'] ?? 'Anonymous',
+        'timestamp': FieldValue.serverTimestamp(),
+      };
+
+      if (_selectedImage != null) {
+        final imageUrl = await _uploadImage(_selectedImage!);
+        message['imageUrl'] = imageUrl;
+      }
+
+      await messagesCollection.add(message).catchError((error) {
+        print("Failed to add message: $error");
+      });
+      questionController.clear();
+      setState(() {
+        _selectedImage = null;
+      });
     }
   }
 
@@ -109,6 +156,10 @@ class _CommunityScreenState extends State<CommunityScreen> {
       ),
       child: Row(
         children: [
+          IconButton(
+            icon: const Icon(Icons.image, color: Colors.grey),
+            onPressed: _pickImage,
+          ),
           Expanded(
             child: TextField(
               controller: questionController,
@@ -126,18 +177,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.send, color: Colors.blue),
-            onPressed: () async {
-              if (questionController.text.isNotEmpty && userData != null) {
-                await messagesCollection.add({
-                  'question': questionController.text,
-                  'author': userData!['username'] ?? 'Anonymous',
-                  'timestamp': FieldValue.serverTimestamp(),
-                }).catchError((error) {
-                  print("Failed to add question: $error");
-                });
-                questionController.clear();
-              }
-            },
+            onPressed: _sendMessage,
           ),
         ],
       ),
@@ -172,6 +212,17 @@ class _CommunityScreenState extends State<CommunityScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (tweet.imageUrl != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    tweet.imageUrl!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 200,
+                  ),
+                ),
+              if (tweet.imageUrl != null) const SizedBox(height: 8),
               Text(
                 tweet.question,
                 style: TextStyle(fontSize: 16, color: textColor),
@@ -193,11 +244,13 @@ class Tweet {
   final String question;
   final String author;
   final Timestamp timestamp;
+  final String? imageUrl;
 
   Tweet({
     required this.question,
     required this.author,
     required this.timestamp,
+    this.imageUrl,
   });
 
   factory Tweet.fromFirestore(DocumentSnapshot doc) {
@@ -207,6 +260,7 @@ class Tweet {
       question: data['question'] ?? '',
       author: data['author'] ?? 'Anonymous',
       timestamp: data['timestamp'] ?? Timestamp.now(),
+      imageUrl: data['imageUrl'],
     );
   }
 }
