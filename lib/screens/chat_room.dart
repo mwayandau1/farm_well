@@ -66,7 +66,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
     if ((questionController.text.isNotEmpty || _selectedImage != null) &&
         userData != null) {
       final message = {
-        'question': questionController.text,
+        'text': questionController.text,
         'author': userData!['username'] ?? 'Anonymous',
         'timestamp': FieldValue.serverTimestamp(),
       };
@@ -154,30 +154,48 @@ class _CommunityScreenState extends State<CommunityScreen> {
         color: Colors.white,
         border: Border(top: BorderSide(color: Colors.grey[200]!)),
       ),
-      child: Row(
+      child: Column(
         children: [
-          IconButton(
-            icon: const Icon(Icons.image, color: Colors.grey),
-            onPressed: _pickImage,
-          ),
-          Expanded(
-            child: TextField(
-              controller: questionController,
-              decoration: InputDecoration(
-                hintText: 'Message..',
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide.none,
+          if (_selectedImage != null)
+            Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Image.file(_selectedImage!,
+                    height: 100, width: 100, fit: BoxFit.cover),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => setState(() => _selectedImage = null),
+                ),
+              ],
+            ),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.image, color: Colors.grey),
+                onPressed: _pickImage,
+              ),
+              Expanded(
+                child: TextField(
+                  controller: questionController,
+                  decoration: InputDecoration(
+                    hintText: _selectedImage != null
+                        ? 'Add a caption...'
+                        : 'Message..',
+                    hintStyle: TextStyle(color: Colors.grey[400]),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.blue),
-            onPressed: _sendMessage,
+              IconButton(
+                icon: const Icon(Icons.send, color: Colors.blue),
+                onPressed: _sendMessage,
+              ),
+            ],
           ),
         ],
       ),
@@ -223,10 +241,11 @@ class _CommunityScreenState extends State<CommunityScreen> {
                   ),
                 ),
               if (tweet.imageUrl != null) const SizedBox(height: 8),
-              Text(
-                tweet.question,
-                style: TextStyle(fontSize: 16, color: textColor),
-              ),
+              if (tweet.text.isNotEmpty)
+                Text(
+                  tweet.text,
+                  style: TextStyle(fontSize: 16, color: textColor),
+                ),
               const SizedBox(height: 5),
               Text(
                 DateFormat.yMMMd().add_jm().format(tweet.timestamp.toDate()),
@@ -241,13 +260,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
 }
 
 class Tweet {
-  final String question;
+  final String text;
   final String author;
   final Timestamp timestamp;
   final String? imageUrl;
 
   Tweet({
-    required this.question,
+    required this.text,
     required this.author,
     required this.timestamp,
     this.imageUrl,
@@ -257,7 +276,7 @@ class Tweet {
     final data = doc.data() as Map<String, dynamic>;
 
     return Tweet(
-      question: data['question'] ?? '',
+      text: data['text'] ?? '',
       author: data['author'] ?? 'Anonymous',
       timestamp: data['timestamp'] ?? Timestamp.now(),
       imageUrl: data['imageUrl'],
