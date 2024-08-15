@@ -47,10 +47,6 @@ class _SignUpState extends State<SignUp> {
           "location": "",
           "farm_size": 0,
           "farm_type": "",
-          "alerts_updates": true,
-          "marketing": true,
-          "content": true,
-          "product_updates": true
         });
 
         // ignore: use_build_context_synchronously
