@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:farm_well/main.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:simple_animations/simple_animations.dart';
+import 'dart:math';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,10 +12,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _rotationAnimation;
 
   @override
   void initState() {
@@ -24,9 +27,12 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
-    _slideAnimation = Tween<Offset>(
-            begin: const Offset(0, 0.5), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
+    );
+    _rotationAnimation = Tween<double>(begin: -0.05, end: 0.05).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
 
     _controller.forward();
     _navigateToHome();
@@ -40,72 +46,138 @@ class _SplashScreenState extends State<SplashScreen>
 
   _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 4));
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MyApp()),
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => const MyApp(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 800),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.green.shade700, Colors.green.shade300],
+      body: Stack(
+        children: [
+          // Animated background
+          Positioned.fill(
+            child: CustomPaint(
+              painter: BackgroundPainter(),
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: SlideTransition(
-                          position: _slideAnimation,
-                          child: Image.asset(
-                            'images/splash.jpeg',
-                            width: 200,
-                            height: 200,
+          SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RotationTransition(
+                          turns: _rotationAnimation,
+                          child: ScaleTransition(
+                            scale: _scaleAnimation,
+                            child: FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.5),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 10),
+                                    ),
+                                  ],
+                                ),
+                                child: Image.asset(
+                                  'images/splash.jpeg',
+                                  width: 200,
+                                  height: 200,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      AnimatedTextKit(
-                        animatedTexts: [
-                          TypewriterAnimatedText(
-                            'Welcome to Farm Well',
-                            textStyle: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                        const SizedBox(height: 30),
+                        AnimatedTextKit(
+                          animatedTexts: [
+                            ColorizeAnimatedText(
+                              'Welcome to Farm Well',
+                              textStyle: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              colors: [
+                                Colors.green,
+                                Colors.blue,
+                                Colors.yellow,
+                                Colors.red,
+                              ],
+                              speed: const Duration(milliseconds: 200),
                             ),
-                            speed: const Duration(milliseconds: 100),
+                          ],
+                          totalRepeatCount: 1,
+                        ),
+                        const SizedBox(height: 10),
+                        FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: const Text(
+                            'Grow with us!',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white70,
+                            ),
                           ),
-                        ],
-                        totalRepeatCount: 1,
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 20),
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
+
+class BackgroundPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final gradient = LinearGradient(
+      colors: [Colors.green.shade700, Color.fromARGB(255, 46, 80, 54)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    );
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final paint = Paint()..shader = gradient.createShader(rect);
+    canvas.drawRect(rect, paint);
+
+    final particlePaint = Paint()..color = Colors.white.withOpacity(0.1);
+    final random = Random();
+
+    for (int i = 0; i < 100; i++) {
+      final x = random.nextDouble() * size.width;
+      final y = random.nextDouble() * size.height;
+      final speed = random.nextDouble() * 1;
+      canvas.drawCircle(Offset(x, y), random.nextDouble() * 3, particlePaint);
+
+      // Animate particles
+      canvas.translate(0, speed);
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
