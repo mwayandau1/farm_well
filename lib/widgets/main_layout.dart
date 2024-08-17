@@ -1,10 +1,8 @@
-import 'package:farm_well/screens/predictions.dart';
-// import 'package:farm_well/screens/profile.dart';
-// import 'package:farm_well/screens/home.dart';
-import 'package:farm_well/screens/chat_room.dart';
 import 'package:flutter/material.dart';
+import 'package:farm_well/screens/predictions.dart';
 import 'package:farm_well/screens/profile.dart';
 import 'package:farm_well/screens/home.dart';
+import 'package:farm_well/screens/chat_room.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -24,14 +22,8 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    // Extract the green color from the theme
-
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Bottom Navigation Bar'),
-      // ),
-      backgroundColor: Colors.grey,
-
+      backgroundColor: Colors.grey[100],
       body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -40,7 +32,8 @@ class _MainLayoutState extends State<MainLayout> {
             _currentIndex = index;
           });
         },
-        selectedItemColor: Colors.black,
+        selectedItemColor: Colors.green,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
