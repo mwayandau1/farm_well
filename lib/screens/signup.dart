@@ -12,7 +12,7 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   String email = "", password = "", name = "";
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -21,6 +21,29 @@ class _SignUpState extends State<SignUp> {
   final _formkey = GlobalKey<FormState>();
   bool isLoading = false;
   bool _obscureText = true;
+
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   registration() async {
     if (_formkey.currentState!.validate()) {
@@ -91,206 +114,216 @@ class _SignUpState extends State<SignUp> {
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Image.asset(
-                  "images/aifarm.jpg",
-                  fit: BoxFit.cover,
-                )),
-            const SizedBox(
-              height: 30.0,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Form(
-                key: _formkey,
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 2.0, horizontal: 30.0),
-                      decoration: BoxDecoration(
-                          color: const Color(0xFFedf0f8),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter Name';
-                          }
-                          return null;
-                        },
-                        controller: nameController,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Name",
-                            hintStyle: TextStyle(
-                                color: Color(0xFFb2b7bf), fontSize: 18.0)),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Hero(
+                tag: "hero-image",
+                child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Image.asset(
+                      "images/aifarm.jpg",
+                      fit: BoxFit.cover,
+                    )),
+              ),
+              const SizedBox(
+                height: 30.0,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Form(
+                  key: _formkey,
+                  child: Column(
+                    children: [
+                      _buildTextField(
+                          controller: nameController,
+                          hintText: "Name",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Name';
+                            }
+                            return null;
+                          }),
+                      const SizedBox(
+                        height: 30.0,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 2.0, horizontal: 30.0),
-                      decoration: BoxDecoration(
-                          color: const Color(0xFFedf0f8),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter Email';
-                          }
-                          return null;
-                        },
-                        controller: mailController,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Email",
-                            hintStyle: TextStyle(
-                                color: Color(0xFFb2b7bf), fontSize: 18.0)),
+                      _buildTextField(
+                          controller: mailController,
+                          hintText: "Email",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Email';
+                            }
+                            return null;
+                          }),
+                      const SizedBox(
+                        height: 30.0,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 2.0, horizontal: 30.0),
-                      decoration: BoxDecoration(
-                          color: const Color(0xFFedf0f8),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter Password';
-                          }
-                          return null;
-                        },
-                        controller: passwordController,
-                        obscureText: _obscureText, // Bind to _obscureText
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Password",
-                            hintStyle: const TextStyle(
-                                color: Color(0xFFb2b7bf), fontSize: 18.0),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureText
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              },
-                            )),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    GestureDetector(
-                      onTap: isLoading
-                          ? null
-                          : () {
-                              if (_formkey.currentState!.validate()) {
-                                setState(() {
-                                  email = mailController.text;
-                                  name = nameController.text;
-                                  password = passwordController.text;
-                                });
-                                registration();
-                              }
+                      _buildTextField(
+                          controller: passwordController,
+                          hintText: "Password",
+                          obscureText: _obscureText,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
                             },
-                      child: Container(
-                          width: MediaQuery.of(context).size.width,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please Enter Password';
+                            }
+                            return null;
+                          }),
+                      const SizedBox(
+                        height: 30.0,
+                      ),
+                      GestureDetector(
+                        onTap: isLoading
+                            ? null
+                            : () {
+                                if (_formkey.currentState!.validate()) {
+                                  setState(() {
+                                    email = mailController.text;
+                                    name = nameController.text;
+                                    password = passwordController.text;
+                                  });
+                                  registration();
+                                }
+                              },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: isLoading
+                              ? 50
+                              : MediaQuery.of(context).size.width,
                           padding: const EdgeInsets.symmetric(
                               vertical: 13.0, horizontal: 30.0),
                           decoration: BoxDecoration(
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(30)),
                           child: Center(
-                              child: !isLoading
-                                  ? const Text(
+                              child: isLoading
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : const Text(
                                       "Sign Up",
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 22.0,
                                           fontWeight: FontWeight.w500),
-                                    )
-                                  : const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    ))),
-                    ),
-                  ],
+                                    )),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            const Text(
-              "or Log in with",
-              style: TextStyle(
-                  color: Color(0xFF273671),
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    AuthMethods().signInWithGoogle(context);
-                  },
-                  child: Image.asset(
-                    "images/google.png",
-                    height: 45,
-                    width: 45,
-                    fit: BoxFit.cover,
+              const SizedBox(
+                height: 20.0,
+              ),
+              const Text(
+                "or Log in with",
+                style: TextStyle(
+                    color: Color(0xFF273671),
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      AuthMethods().signInWithGoogle(context);
+                    },
+                    child: Image.asset(
+                      "images/google.png",
+                      height: 45,
+                      width: 45,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Already have an account?",
-                    style: TextStyle(
-                        color: Color(0xFF8c8e98),
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w500)),
-                const SizedBox(
-                  width: 5.0,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const LogIn()));
-                  },
-                  child: const Text(
-                    "Log in",
-                    style: TextStyle(
-                        color: Color(0xFF273671),
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w500),
+                ],
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Already have an account?",
+                      style: TextStyle(
+                          color: Color(0xFF8c8e98),
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500)),
+                  const SizedBox(
+                    width: 5.0,
                   ),
-                ),
-              ],
-            )
-          ],
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LogIn()));
+                    },
+                    child: const Text(
+                      "Log in",
+                      style: TextStyle(
+                          color: Color(0xFF273671),
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    String? Function(String?)? validator,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
+      decoration: BoxDecoration(
+          color: const Color(0xFFedf0f8),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8.0,
+              offset: Offset(0, 3),
+            )
+          ]),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Color(0xFFb2b7bf), fontSize: 18.0),
+          suffixIcon: suffixIcon,
+        ),
+        validator: validator,
       ),
     );
   }

@@ -14,7 +14,7 @@ class LogIn extends StatefulWidget {
   State<LogIn> createState() => _LogInState();
 }
 
-class _LogInState extends State<LogIn> {
+class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
   String email = "", password = "";
 
   TextEditingController mailController = TextEditingController();
@@ -24,6 +24,29 @@ class _LogInState extends State<LogIn> {
 
   bool isLoading = false;
   bool _obscureText = true;
+
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Future<void> userLogin() async {
     if (!_formKey.currentState!.validate()) return;
@@ -80,11 +103,19 @@ class _LogInState extends State<LogIn> {
   }
 
   Widget _buildEmailField() {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
       decoration: BoxDecoration(
           color: const Color(0xFFedf0f8),
-          borderRadius: BorderRadius.circular(30)),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8.0,
+              offset: Offset(0, 3),
+            )
+          ]),
       child: TextFormField(
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -106,11 +137,19 @@ class _LogInState extends State<LogIn> {
   }
 
   Widget _buildPasswordField() {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 30.0),
       decoration: BoxDecoration(
           color: const Color(0xFFedf0f8),
-          borderRadius: BorderRadius.circular(30)),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8.0,
+              offset: Offset(0, 3),
+            )
+          ]),
       child: TextFormField(
         controller: passwordController,
         validator: (value) {
@@ -152,8 +191,9 @@ class _LogInState extends State<LogIn> {
                 userLogin();
               }
             },
-      child: Container(
-        width: MediaQuery.of(context).size.width,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: isLoading ? 50 : MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(vertical: 13.0, horizontal: 30.0),
         decoration: BoxDecoration(
             color: Colors.green, borderRadius: BorderRadius.circular(30)),
@@ -222,58 +262,64 @@ class _LogInState extends State<LogIn> {
         centerTitle: true,
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Image.asset(
-                  "images/aifarm.jpg",
-                  fit: BoxFit.cover,
-                )),
-            const SizedBox(height: 30.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    _buildEmailField(),
-                    const SizedBox(height: 30.0),
-                    _buildPasswordField(),
-                    const SizedBox(height: 30.0),
-                    _buildSignInButton(),
-                  ],
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Hero(
+                tag: "hero-image",
+                child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Image.asset(
+                      "images/aifarm.jpg",
+                      fit: BoxFit.cover,
+                    )),
+              ),
+              const SizedBox(height: 30.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildEmailField(),
+                      const SizedBox(height: 30.0),
+                      _buildPasswordField(),
+                      const SizedBox(height: 30.0),
+                      _buildSignInButton(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20.0),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ForgotPassword()));
-              },
-              child: const Text("Forgot your password?",
-                  style: TextStyle(
-                      color: Color(0xFF8c8e98),
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w500)),
-            ),
-            const SizedBox(height: 20.0),
-            const Text(
-              "or Log in with",
-              style: TextStyle(
-                  color: Color(0xFF273671),
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 30.0),
-            _buildGoogleSignInButton(),
-            const SizedBox(height: 30.0),
-            _buildSignUpText(),
-          ],
+              const SizedBox(height: 20.0),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ForgotPassword()));
+                },
+                child: const Text("Forgot your password?",
+                    style: TextStyle(
+                        color: Color(0xFF8c8e98),
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500)),
+              ),
+              const SizedBox(height: 20.0),
+              const Text(
+                "or Log in with",
+                style: TextStyle(
+                    color: Color(0xFF273671),
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 30.0),
+              _buildGoogleSignInButton(),
+              const SizedBox(height: 30.0),
+              _buildSignUpText(),
+            ],
+          ),
         ),
       ),
     );
