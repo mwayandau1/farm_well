@@ -81,27 +81,28 @@ class _CropCardState extends State<CropCard> {
             },
           ),
         ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: crops.asMap().entries.map((entry) {
-            return GestureDetector(
-              onTap: () => _navigateTo(
-                  context, '/${entry.value['name']!.toLowerCase()}'),
-              child: Container(
-                width: 6.0,
-                height: 6.0,
-                margin: const EdgeInsets.symmetric(horizontal: 2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _currentIndex == entry.key
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey.withOpacity(0.5),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+        // The Row widget for the dots is removed here
+        // const SizedBox(height: 8),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: crops.asMap().entries.map((entry) {
+        //     return GestureDetector(
+        //       onTap: () => _navigateTo(
+        //           context, '/${entry.value['name']!.toLowerCase()}'),
+        //       child: Container(
+        //         width: 6.0,
+        //         height: 6.0,
+        //         margin: const EdgeInsets.symmetric(horizontal: 2.0),
+        //         decoration: BoxDecoration(
+        //           shape: BoxShape.circle,
+        //           color: _currentIndex == entry.key
+        //               ? Theme.of(context).primaryColor
+        //               : Colors.grey.withOpacity(0.5),
+        //         ),
+        //       ),
+        //     );
+        //   }).toList(),
+        // ),
       ],
     );
   }
