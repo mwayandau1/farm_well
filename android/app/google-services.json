@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "868737949553-2dan90hu702b8avsept5hgtajh8cevvd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.farm_well",
+            "certificate_hash": "94d4fce09f4923abb8a161b5d0043ebf55ec8cec"
+          }
+        },
+        {
           "client_id": "868737949553-972us5j0fs6td5c5qvrjsm7vsnjfidpq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

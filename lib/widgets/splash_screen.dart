@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:farm_well/main.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:simple_animations/simple_animations.dart';
 import 'dart:math';
 
 class SplashScreen extends StatefulWidget {
@@ -106,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen>
                         AnimatedTextKit(
                           animatedTexts: [
                             ColorizeAnimatedText(
-                              'Welcome to Farm Well',
+                              'Welcome to Farmwell',
                               textStyle: const TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -156,7 +155,7 @@ class BackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final gradient = LinearGradient(
-      colors: [Colors.green.shade700, Color.fromARGB(255, 46, 80, 54)],
+      colors: [Colors.green.shade700, const Color.fromARGB(255, 46, 80, 54)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     );

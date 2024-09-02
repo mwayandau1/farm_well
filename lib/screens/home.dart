@@ -10,6 +10,9 @@ import 'package:farm_well/screens/weather.dart';
 import 'package:farm_well/widgets/options_card.dart';
 import 'package:farm_well/widgets/weaether_info.dart';
 
+// adb reverse tcp:5000 tcp:5000
+
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:farm_well/screens/prediction_detail.dart';
 import 'package:farm_well/widgets/prediction_card.dart';
 
@@ -53,10 +54,7 @@ class _AllPredictionsScreenState extends State<AllPredictionsScreen> {
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("predictions")
-                  .orderBy('timestamp', descending: true)
-                  .snapshots(),
+              stream: _getUserPredictionsStream(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -120,5 +118,20 @@ class _AllPredictionsScreenState extends State<AllPredictionsScreen> {
         ],
       ),
     );
+  }
+
+  Stream<QuerySnapshot> _getUserPredictionsStream() {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      return FirebaseFirestore.instance
+          .collection("predictions")
+          .where('user_id', isEqualTo: user.uid)
+          .orderBy('timestamp', descending: true)
+          .snapshots();
+    } else {
+      // Handle the case where the user is not logged in or return an empty stream
+      return const Stream.empty();
+    }
   }
 }

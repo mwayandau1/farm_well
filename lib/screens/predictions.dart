@@ -5,8 +5,9 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:farm_well/services/predictImageUpload.dart'; // Ensure this path is correct
-import 'cure.dart'; // Import the Cure class
+import 'package:farm_well/services/predictImageUpload.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'cure.dart';
 
 class PredictionScreen extends StatefulWidget {
   const PredictionScreen({super.key});
@@ -23,7 +24,7 @@ class _PredictionScreenState extends State<PredictionScreen> {
   bool _isPredicting = false;
   bool _hasPrediction = false;
 
-  String url = "http://10.42.0.1:5000/predict";
+  String url = "http://127.0.0.1:5000/predict";
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(
@@ -105,10 +106,15 @@ class _PredictionScreenState extends State<PredictionScreen> {
 
               final cureText = Cure.getDiseaseCure(label);
 
+              // Get the current user's UID
+              final User? currentUser = FirebaseAuth.instance.currentUser;
+              final String? uid = currentUser?.uid;
+
               await FirebaseFirestore.instance.collection('predictions').add({
                 'image_url': imageUrl,
                 'prediction': prediction,
                 'cure': cureText,
+                'user_id': uid, // Save the user ID
                 'timestamp': FieldValue.serverTimestamp(),
               });
 

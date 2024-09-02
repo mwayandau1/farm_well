@@ -53,6 +53,7 @@ dependencies:
   image: ^3.0.2
   flutter_email_sender: ^6.0.3
   simple_animations: ^5.0.2
+  firebase_analytics: ^10.10.7
 
 dev_dependencies:
   flutter_test:

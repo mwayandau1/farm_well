@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:farm_well/screens/all_prediction_screen.dart';
 import 'package:farm_well/screens/prediction_detail.dart';
 import 'package:farm_well/widgets/prediction_card.dart';
@@ -17,6 +18,10 @@ class PredictionResultsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current user's UID
+    final User? currentUser = FirebaseAuth.instance.currentUser;
+    final String? uid = currentUser?.uid;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -47,6 +52,7 @@ class PredictionResultsSection extends StatelessWidget {
         StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection("predictions")
+              .where('user_id', isEqualTo: uid)
               .orderBy('timestamp', descending: true)
               .limit(4)
               .snapshots(),
